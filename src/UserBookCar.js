@@ -1,0 +1,156 @@
+import React, { useEffect, useState } from "react";
+import { Card, Button, Container, Row, Col, Modal, Form } from "react-bootstrap";
+
+function UserBookCar() {
+  const [cars, setCars] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCarId, setSelectedCarId] = useState(null);
+  const [bookingData, setBookingData] = useState({
+    location: "",
+    time: "",
+  });
+
+  // Retrieve userId from localStorage
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    setUserId(storedUserId || "N/A"); // Fallback if not found
+  }, []);
+
+  // Fetch car details
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/cars/all");
+        const data = await response.json();
+        setCars(data);
+      } catch (error) {
+        console.error("Error fetching car details:", error);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  // Open modal with selected car ID
+  const handleBookNow = (carId) => {
+    setSelectedCarId(carId);
+    setShowModal(true);
+  };
+
+  // Handle input change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBookingData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const bookingRequest = {
+      userid: userId, // Include userId in booking request
+      carid: selectedCarId,
+      location: bookingData.location,
+      time: bookingData.time,
+      bookstatus: 0,
+      paymentstatus: 0,
+      totalfee: 0,
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/bookings/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingRequest),
+      });
+
+      if (!response.ok) throw new Error("Booking failed");
+
+      alert("Booking successful!");
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error booking car:", error);
+      alert("Booking failed. Try again.");
+    }
+  };
+
+  return (
+    <Container>
+      <h2 className="text-center my-4">Book a Car</h2>
+      
+      {/* Display Logged-in User ID */}
+      <h5 className="text-center text-primary">Logged in as User ID: {userId}</h5>
+
+      <Row>
+        {cars.map((car) => (
+          <Col key={car.id} md={4} className="mb-4">
+            <Card>
+              <Card.Img
+                variant="top"
+                src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
+                alt={car.model}
+                style={{ height: "200px", objectFit: "cover" }}
+              />
+              <Card.Body>
+                <Card.Title>{car.model}</Card.Title>
+                <Card.Text>
+                  <strong>License Plate:</strong> {car.licensePlate} <br />
+                  <strong>Seats:</strong> {car.seats} <br />
+                  <strong>Capacity:</strong> {car.capacity} CC <br />
+                  <strong>Price per Km:</strong> ${car.pricePerKm} <br />
+                </Card.Text>
+                <Button variant="primary" onClick={() => handleBookNow(car.id)}>
+                  Book Now
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Booking Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Book Car</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>User ID</Form.Label>
+              <Form.Control type="text" value={userId} disabled />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Pickup Location</Form.Label>
+              <Form.Control
+                type="text"
+                name="location"
+                value={bookingData.location}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Pickup Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                name="time"
+                value={bookingData.time}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit">
+              Confirm Booking
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    </Container>
+  );
+}
+
+export default UserBookCar;

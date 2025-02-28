@@ -9,6 +9,8 @@ import AdminDash from './AdminDash';
 import DriverDash from './DriverDash';
 import UserDash from './UserDash';
 import AdminManageDrivers from "./AdminManageDrivers";
+import UserBookCar from './UserBookCar';
+import AdminViewBookings from "./AdminViewBookings"; 
 
 function LoginRegister() {
   const [name, setName] = useState('');
@@ -28,18 +30,22 @@ function LoginRegister() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         const userRole = data.userrole;
-
-        // Redirect based on userrole
+        const userId = data.userid;  // Assuming 'id' is returned from backend
+  
+        // Store user ID in localStorage
+        localStorage.setItem("userId", userId);
+  
+        // Redirect based on user role
         if (userRole === 0) {
           navigate('/admin');
         } else if (userRole === 1) {
           navigate('/driver');
         } else if (userRole === 2) {
-          navigate('/user');
+          navigate('/user');  // Navigate to UserDash
         } else {
           setMessage('Invalid user role.');
         }
@@ -51,6 +57,7 @@ function LoginRegister() {
       console.error('Login Failed:', error);
     }
   };
+  
 
   // Handle Registration
   const handleRegister = async (event) => {
@@ -135,6 +142,8 @@ export default function App() {
         <Route path="/AdminManageDrivers" element={<AdminManageDrivers />} />
         <Route path="/driver" element={<DriverDash />} />
         <Route path="/user" element={<UserDash />} />
+        <Route path="/UserBookCar" element={<UserBookCar />} />
+        <Route path="/AdminViewBookings" element={<AdminViewBookings />} />
       </Routes>
     </Router>
   );

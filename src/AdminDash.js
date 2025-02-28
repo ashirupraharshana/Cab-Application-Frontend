@@ -119,6 +119,7 @@ function AdminDash() {
               <Nav.Link onClick={fetchCarDetails}>Manage Cars</Nav.Link>
               <Nav.Link as={Link} to="/AdminManageDrivers">Manage Driver</Nav.Link>
               <Nav.Link as={Link} to="/UserDash">User</Nav.Link>
+              <Nav.Link as={Link} to="/AdminViewBookings">View Bookings</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>
