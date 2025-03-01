@@ -11,6 +11,9 @@ import UserDash from './UserDash';
 import AdminManageDrivers from "./AdminManageDrivers";
 import UserBookCar from './UserBookCar';
 import AdminViewBookings from "./AdminViewBookings"; 
+import ViewMyBookings from "./ViewMyBookings";
+import BookingInProgress from "./BookingInProgress";
+import DriverConformedBookings from "./DriverConformedBookings";
 
 function LoginRegister() {
   const [name, setName] = useState('');
@@ -144,6 +147,9 @@ export default function App() {
         <Route path="/user" element={<UserDash />} />
         <Route path="/UserBookCar" element={<UserBookCar />} />
         <Route path="/AdminViewBookings" element={<AdminViewBookings />} />
+        <Route path="/ViewMyBookings" element={<ViewMyBookings />} />
+        <Route path="/BookingInProgress" element={<BookingInProgress />} />
+        <Route path="/DriverConformedBookings" element={<DriverConformedBookings />}/>
       </Routes>
     </Router>
   );

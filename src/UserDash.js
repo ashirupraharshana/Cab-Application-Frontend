@@ -15,8 +15,9 @@ function UserDash() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
-            <Nav.Link as={Link} to="/DriverDash">Manage Driver</Nav.Link>
+            <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
             <Nav.Link as={Link} to="/UserDash">User</Nav.Link>
+            <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
             <Nav.Link as={Link} to="/">Logout</Nav.Link>
           </Nav>
         </Navbar.Collapse>
