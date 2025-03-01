@@ -4,10 +4,10 @@ import { Container, Card, Dropdown, Button, Spinner } from "react-bootstrap";
 function AdminViewBookings() {
   const [bookings, setBookings] = useState([]);
   const [drivers, setDrivers] = useState([]);
-  const [cars, setCars] = useState({}); // Store car details by car ID
+  const [cars, setCars] = useState({});
   const [loadingCars, setLoadingCars] = useState(false);
 
-  // Fetch all bookings
+  // Fetch all bookings but only show those where driverid === "-1"
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -15,7 +15,8 @@ function AdminViewBookings() {
         if (!response.ok) throw new Error("Failed to fetch bookings");
 
         const data = await response.json();
-        setBookings(data);
+        const filteredBookings = data.filter((booking) => booking.driverid === "-1"); // Filter for unassigned bookings
+        setBookings(filteredBookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
@@ -46,8 +47,8 @@ function AdminViewBookings() {
     const fetchCarDetails = async () => {
       if (bookings.length === 0) return;
 
-      const carIds = [...new Set(bookings.map((b) => b.carid))]; // Get unique car IDs
-      const newCarIds = carIds.filter((id) => !cars[id]); // Fetch only new cars
+      const carIds = [...new Set(bookings.map((b) => b.carid))];
+      const newCarIds = carIds.filter((id) => !cars[id]);
 
       if (newCarIds.length === 0) return;
 
@@ -61,14 +62,14 @@ function AdminViewBookings() {
             if (!response.ok) throw new Error("Failed to fetch car data");
 
             const data = await response.json();
-            carData[carid] = data; // Store data
+            carData[carid] = data;
           } catch (error) {
             console.error(`Error fetching car details for carid ${carid}:`, error);
           }
         })
       );
 
-      setCars((prevCars) => ({ ...prevCars, ...carData })); // Merge with previous state
+      setCars((prevCars) => ({ ...prevCars, ...carData }));
       setLoadingCars(false);
     };
 
@@ -89,11 +90,7 @@ function AdminViewBookings() {
       alert("Driver assigned successfully!");
 
       // Refresh bookings
-      const updatedResponse = await fetch("http://localhost:8080/bookings/all");
-      if (!updatedResponse.ok) throw new Error("Failed to refresh bookings");
-
-      const updatedBookings = await updatedResponse.json();
-      setBookings(updatedBookings);
+      setBookings((prevBookings) => prevBookings.filter((b) => b.id !== bookingId));
     } catch (error) {
       console.error("Error assigning driver:", error);
       alert("Failed to assign driver.");
@@ -122,80 +119,70 @@ function AdminViewBookings() {
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center mb-4">Admin - View Bookings</h2>
-
-      {bookings.length > 0 ? (
-        bookings.map((booking) => {
-          const car = cars[booking.carid]; // Get car details
-
+    <h2 className="text-center mb-4">Admin - Unassigned Bookings</h2>
+  
+    {bookings.length > 0 ? (
+      <div className="row">
+        {bookings.map((booking) => {
+          const car = cars[booking.carid];
+  
           return (
-            <Card key={booking.id} className="mb-3 shadow-sm">
-              <Card.Body>
-                <Card.Title>Booking ID: {booking.id}</Card.Title>
-                {car ? (
-                  <>
-                    <strong>Car:</strong> {car.model} <br />
-                    {car.photo ? (
-                      <img
-                        src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
-                        alt={car.model}
-                        className="img-fluid mt-2"
-                        style={{ maxWidth: "200px", borderRadius: "5px" }}
-                      />
-                    ) : (
-                      <p className="text-muted">No photo available</p>
-                    )}
-                  </>
+            <div key={booking.id} className="col-md-4 col-sm-6 mb-4">
+              <Card className="shadow-sm">
+                {car?.photo ? (
+                  <Card.Img 
+                    variant="top" 
+                    src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
+                    alt={car.model} 
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
                 ) : (
-                  <p>{loadingCars ? <Spinner animation="border" size="sm" /> : "Loading car details..."}</p>
+                  <div className="text-center py-5 bg-light">No Image Available</div>
                 )}
-
-                <Card.Text>
-                  <strong>User ID:</strong> {booking.userid} <br />
-                  <strong>Car ID:</strong> {booking.carid} <br />
-                  <strong>Driver:</strong> {booking.driverid ? `ID: ${booking.driverid}` : "Not Assigned"} <br />
-                  <strong>Location:</strong> {booking.location} <br />
-                  <strong>Time:</strong> {booking.time} <br />
-                  <strong>Status:</strong>{" "}
-                  <span className={booking.bookstatus === 0 ? "text-warning" : "text-success"}>
-                    {booking.bookstatus === 0 ? "Pending" : "Confirmed"}
-                  </span>
-                  <br />
-                  <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-                  <strong>Payment Status:</strong>{" "}
-                  <span className={booking.paymentstatus === 0 ? "text-danger" : "text-success"}>
-                    {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
-                  </span>
-                </Card.Text>
-
-                {/* Assign Driver Dropdown */}
-                <Dropdown className="mt-2">
-                  <Dropdown.Toggle variant="primary">Assign Driver</Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {drivers.length > 0 ? (
-                      drivers.map((driver) => (
-                        <Dropdown.Item key={driver.id} onClick={() => handleAssignDriver(booking.id, driver.id)}>
-                          {driver.username} (ID: {driver.id})
-                        </Dropdown.Item>
-                      ))
-                    ) : (
-                      <Dropdown.Item disabled>No Drivers Available</Dropdown.Item>
-                    )}
-                  </Dropdown.Menu>
-                </Dropdown>
-
-                {/* Delete Booking Button */}
-                <Button variant="danger" className="mt-2" onClick={() => handleDeleteBooking(booking.id)}>
-                  Delete Booking
-                </Button>
-              </Card.Body>
-            </Card>
+                <Card.Body>
+                  <Card.Title>{car ? car.model : "Car Details Loading..."}</Card.Title>
+                  <Card.Text>
+                    <strong>Booking ID:</strong> {booking.id} <br />
+                    <strong>User ID:</strong> {booking.userid} <br />
+                    <strong>Location:</strong> {booking.location} <br />
+                    <strong>Time:</strong> {booking.time} <br />
+                    <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
+                    <strong>Payment:</strong>{" "}
+                    <span className={booking.paymentstatus === 0 ? "text-danger" : "text-success"}>
+                      {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
+                    </span>
+                  </Card.Text>
+  
+                  {/* Assign Driver Dropdown */}
+                  <Dropdown className="mb-2">
+                    <Dropdown.Toggle variant="primary" size="sm">Assign Driver</Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {drivers.length > 0 ? (
+                        drivers.map((driver) => (
+                          <Dropdown.Item key={driver.id} onClick={() => handleAssignDriver(booking.id, driver.id)}>
+                            {driver.username} (ID: {driver.id})
+                          </Dropdown.Item>
+                        ))
+                      ) : (
+                        <Dropdown.Item disabled>No Drivers Available</Dropdown.Item>
+                      )}
+                    </Dropdown.Menu>
+                  </Dropdown>
+  
+                  <Button variant="danger" size="sm" onClick={() => handleDeleteBooking(booking.id)}>
+                    Delete Booking
+                  </Button>
+                </Card.Body>
+              </Card>
+            </div>
           );
-        })
-      ) : (
-        <p className="text-center">No bookings found</p>
-      )}
-    </Container>
+        })}
+      </div>
+    ) : (
+      <p className="text-center">No unassigned bookings found</p>
+    )}
+  </Container>
+  
   );
 }
 

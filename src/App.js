@@ -15,7 +15,9 @@ import ViewMyBookings from "./ViewMyBookings";
 import BookingInProgress from "./BookingInProgress";
 import DriverConformedBookings from "./DriverConformedBookings";
 import UserBookingHistory from "./UserBookingHistory"; 
-import Driverdash from "./DriverDash"; 
+import AdminManageBookings from "./AdminManageBookings"; 
+
+
 
 function LoginRegister() {
   const [name, setName] = useState('');
@@ -155,6 +157,8 @@ export default function App() {
         <Route path="/UserBookingHistory" element={<UserBookingHistory />}/>
         <Route path="/UserBookingHistory" element={<UserBookingHistory />} />
         <Route path="/DriverDash" element={<DriverDash />} />
+        <Route path="/AdminManageBookings" element={<AdminManageBookings />} />
+        
       </Routes>
     </Router>
   );
