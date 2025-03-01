@@ -46,33 +46,64 @@ function DriverDash() {
     setPaymentDetails({ ...paymentDetails, [name]: value });
   };
 
-  // Handle Payment Submission
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    console.log("Processing payment for:", selectedBooking.id, paymentDetails);
-    
-    // TODO: Integrate real payment API here
-
-    // Simulating payment update
-    alert("Payment Successful!");
-    handleCloseModal();
+  
+    if (!selectedBooking) {
+      alert("No booking selected for payment.");
+      return;
+    }
+  
+    try {
+      console.log("Processing payment for:", selectedBooking.id, paymentDetails);
+  
+      // TODO: Integrate real payment gateway here
+  
+      // Simulating successful payment
+      alert("Payment Successful!");
+  
+      // Make API request to update payment status
+      const response = await fetch(`http://localhost:8080/bookings/update/${selectedBooking.id}/paymentstatus`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update payment status.");
+      }
+  
+      // Update UI: Set payment status to 1 (Paid)
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === selectedBooking.id ? { ...booking, paymentstatus: 1 } : booking
+        )
+      );
+  
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      alert("Payment failed. Please try again.");
+    }
   };
-
+  
   return (
     <>
-      {/* Navbar */}
-      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-        <Container>
-          <Navbar.Brand as={Link} to="/">Driver Dashboard</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/DriverBookings">My Bookings</Nav.Link>
-              <Nav.Link as={Link} to="/">Logout</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    {/* Navbar */}
+<Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+  <div className="container">
+    <Navbar.Brand as={Link} to="/">User Dashboard</Navbar.Brand>
+    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+    <Navbar.Collapse id="basic-navbar-nav">
+      <Nav className="ms-auto">
+        <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
+        <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
+        <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
+        <Nav.Link as={Link} to="/UserBookingHistory">Booking History</Nav.Link>
+        <Nav.Link as={Link} to="/">Logout</Nav.Link>
+      </Nav>
+    </Navbar.Collapse>
+  </div>
+</Navbar>
 
       {/* Dashboard Content */}
       <Container>

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Navbar, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 function ViewMyBookings() {
   const userId = localStorage.getItem("userId");
@@ -58,6 +60,25 @@ function ViewMyBookings() {
   };
 
   return (
+<>
+    {/* Navbar */}
+<Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+  <div className="container">
+    <Navbar.Brand as={Link} to="/">User Dashboard</Navbar.Brand>
+    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+    <Navbar.Collapse id="basic-navbar-nav">
+      <Nav className="ms-auto">
+        <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
+        <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
+        <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
+        <Nav.Link as={Link} to="/UserBookingHistory">Booking History</Nav.Link>
+        <Nav.Link as={Link} to="/">Logout</Nav.Link>
+      </Nav>
+    </Navbar.Collapse>
+  </div>
+</Navbar>
+
+
     <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>My Bookings</h2>
       {bookings.length > 0 ? (
@@ -124,6 +145,7 @@ function ViewMyBookings() {
         </p>
       )}
     </div>
+    </>
   );
 }
 

@@ -154,7 +154,9 @@ const handlePayManually = (bookingId) => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/DriverBookings">My Bookings</Nav.Link>
+            <Nav.Link as={Link} to="/DriverDash">My Bookings</Nav.Link>
+
+            <Nav.Link onClick={(e) => e.preventDefault()}>Conformed Bookings</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>

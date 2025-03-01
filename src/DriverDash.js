@@ -102,10 +102,6 @@ function DriverDash() {
   };
   
   
-  
-  
-  
-
   const filteredBookings = bookings.filter(
     (booking) => String(booking.driverid) === driverId && booking.bookstatus !== 2
   );
@@ -120,8 +116,10 @@ function DriverDash() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/DriverBookings">My Bookings</Nav.Link>
-              <Nav.Link as={Link} to="/DriverConformedBookings">Conformed Bookinga</Nav.Link>
+            <Nav.Link onClick={(e) => e.preventDefault()}>My Bookings</Nav.Link>
+
+
+              <Nav.Link as={Link} to="/DriverConformedBookings">Conformed Bookings</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>

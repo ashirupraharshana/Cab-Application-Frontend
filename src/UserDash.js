@@ -16,14 +16,14 @@ function UserDash() {
           <Nav className="ms-auto">
             <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
             <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
-            <Nav.Link as={Link} to="/UserDash">User</Nav.Link>
             <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
+            <Nav.Link as={Link} to="/UserBookingHistory">Booking History</Nav.Link>
             <Nav.Link as={Link} to="/">Logout</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
-      {/* Display User Info */}
-      <span className="text-light me-3">Logged in as: <strong>(ID: {userId})</strong></span>
+      {/* Hide User ID */}
+      <span className="text-light me-3"><strong></strong></span>
     </Navbar>
   );
 }

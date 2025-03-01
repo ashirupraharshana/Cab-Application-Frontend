@@ -34,3 +34,7 @@
 .car-card button:hover {
     opacity: 0.8;
 }
+span.text-light.me-3 {
+    display: none;
+  }
+  
