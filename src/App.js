@@ -19,7 +19,6 @@ import AdminManageBookings from "./AdminManageBookings";
 import AdminManageUsers from "./AdminManageUsers"; 
 
 
-
 function LoginRegister() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -160,6 +159,7 @@ export default function App() {
         <Route path="/DriverDash" element={<DriverDash />} />
         <Route path="/AdminManageBookings" element={<AdminManageBookings />} />
         <Route path="/AdminManageUsers" element={<AdminManageUsers />} />
+        <Route path="/AdminDash" element={<AdminDash />} />
         
       </Routes>
     </Router>
