@@ -39,21 +39,23 @@ const AdminManageUsers = () => {
 
   return (
     <>
-      {/* Navbar */}
-      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-        <Container>
-          <Navbar.Brand as={Link} to="/">Admin</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/AdminDash">Manage Cars</Nav.Link>
-              <Nav.Link onClick={fetchDrivers}>Manage Driver</Nav.Link>
-              <Nav.Link as={Link} to="/UserDash">User</Nav.Link>
-              <Nav.Link as={Link} to="/">Logout</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+         {/* Navbar */}
+         <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+           <Container>
+             <Navbar.Brand as={Link} to="/">Admin</Navbar.Brand>
+             <Navbar.Toggle aria-controls="basic-navbar-nav" />
+             <Navbar.Collapse id="basic-navbar-nav">
+               <Nav className="ms-auto">
+               <Nav.Link as={Link} to="/AdminDash">Manage Cars</Nav.Link>
+                 <Nav.Link as={Link} to="/AdminManageDrivers">Manage Drivers</Nav.Link>
+                 <Nav.Link as={Link} to="/AdminManageUsers">Manage Users</Nav.Link>
+                 <Nav.Link as={Link} to="/AdminViewBookings">Assign Drivers</Nav.Link>
+                 <Nav.Link as={Link} to="/AdminManageBookings">Manage Bookings</Nav.Link>
+                 <Nav.Link as={Link} to="/">Logout</Nav.Link>
+               </Nav>
+             </Navbar.Collapse>
+           </Container>
+         </Navbar>
 
       <Container>
         <h1 className="mb-4">Manage Drivers</h1>
