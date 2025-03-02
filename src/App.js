@@ -16,6 +16,7 @@ import BookingInProgress from "./BookingInProgress";
 import DriverConformedBookings from "./DriverConformedBookings";
 import UserBookingHistory from "./UserBookingHistory"; 
 import AdminManageBookings from "./AdminManageBookings"; 
+import AdminManageUsers from "./AdminManageUsers"; 
 
 
 
@@ -158,6 +159,7 @@ export default function App() {
         <Route path="/UserBookingHistory" element={<UserBookingHistory />} />
         <Route path="/DriverDash" element={<DriverDash />} />
         <Route path="/AdminManageBookings" element={<AdminManageBookings />} />
+        <Route path="/AdminManageUsers" element={<AdminManageUsers />} />
         
       </Routes>
     </Router>

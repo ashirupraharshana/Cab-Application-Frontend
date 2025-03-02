@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Container, Card, Button, Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Navbar, Nav, Container, Card, Button, Modal, Form, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 function AdminViewBookings() {
   const [bookings, setBookings] = useState([]);
@@ -68,6 +69,26 @@ function AdminViewBookings() {
   };
 
   return (
+
+     <>
+          {/* Navbar */}
+          <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+            <Container>
+              <Navbar.Brand as={Link} to="/">Admin</Navbar.Brand>
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse id="basic-navbar-nav">
+                <Nav className="ms-auto">
+                  <Nav.Link onClick={fetchCarDetails}>Manage Cars</Nav.Link>
+                  <Nav.Link as={Link} to="/AdminManageDrivers">Manage Driver</Nav.Link>
+                  <Nav.Link as={Link} to="/AdminManageUsers">Manage Users</Nav.Link>
+                  <Nav.Link as={Link} to="/AdminViewBookings">Assign Drivers</Nav.Link>
+                  <Nav.Link as={Link} to="/AdminManageBookings">Manage Bookings </Nav.Link>
+                  <Nav.Link as={Link} to="/">Logout</Nav.Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+
     <Container className="mt-4">
       <h2 className="text-center mb-4">Admin - All Bookings</h2>
       {bookings.length > 0 ? (
@@ -113,6 +134,7 @@ function AdminViewBookings() {
         <p className="text-center">No bookings found</p>
       )}
     </Container>
+    </>
   );
 }
 
