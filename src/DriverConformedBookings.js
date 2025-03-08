@@ -99,14 +99,29 @@ const handlePayManually = (bookingId) => {
   
     const totalFee = travelDistance * pricePerKm;
   
-    // Update travelDistance first
-    fetch(`http://localhost:8080/bookings/update/${selectedBooking.id}/traveldistance`, {
+    // Step 1: Update booking status to 2
+    fetch(`http://localhost:8080/bookings/update/${selectedBooking.id}/status2`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ travelDistance: parseInt(travelDistance, 10) }),
     })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update booking status");
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Step 2: Update travelDistance
+        return fetch(`http://localhost:8080/bookings/update/${selectedBooking.id}/traveldistance`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ travelDistance: parseInt(travelDistance, 10) }),
+        });
+      })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to update travel distance");
@@ -114,7 +129,7 @@ const handlePayManually = (bookingId) => {
         return response.json();
       })
       .then(() => {
-        // Now update totalFee
+        // Step 3: Update totalFee
         return fetch(`http://localhost:8080/bookings/update/${selectedBooking.id}/totalfee`, {
           method: "PUT",
           headers: {
@@ -136,13 +151,14 @@ const handlePayManually = (bookingId) => {
           )
         );
         setShowModal(false);
-        alert("Travel distance and total fee updated successfully!");
+        alert("Booking status updated to 'Completed' and total fee updated successfully!");
       })
       .catch((error) => {
-        console.error("Error updating travel distance or total fee:", error);
-        alert("Error updating travel distance or total fee");
+        console.error("Error updating booking status, travel distance, or total fee:", error);
+        alert("Error updating booking details.");
       });
   };
+  
   
 
   return (
@@ -186,7 +202,10 @@ const handlePayManually = (bookingId) => {
 
                   
                 </Card.Text>
-                <Button variant="success" onClick={() => handleArrivedClick(booking)}>Arrived</Button>
+                <Button variant="success" onClick={() => handleArrivedClick(booking)}>
+  Arrived
+</Button>
+
                 <Button 
   variant="warning" 
   onClick={() => handlePayManually(booking.id)}
