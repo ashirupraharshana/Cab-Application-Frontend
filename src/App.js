@@ -17,6 +17,7 @@ import DriverConformedBookings from "./DriverConformedBookings";
 import UserBookingHistory from "./UserBookingHistory"; 
 import AdminManageBookings from "./AdminManageBookings"; 
 import AdminManageUsers from "./AdminManageUsers"; 
+import BookACarImmediately from "./BookACarImmediately"; 
 
 
 function LoginRegister() {
@@ -105,6 +106,10 @@ function LoginRegister() {
                   <Form.Label>Password</Form.Label>
                   <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </Form.Group>
+                <Button variant="link" className="w-100 mt-2" onClick={() => navigate('/BookACarImmediately')}>
+                Book A Car immediately
+                </Button>
+
                 <Button variant="success" type="submit" className="w-100 mt-4">Login</Button>
                 <Button variant="primary" className="w-100 mt-2" onClick={() => setShowRegister(true)}>Register</Button>
               </Form>
@@ -160,6 +165,7 @@ export default function App() {
         <Route path="/AdminManageBookings" element={<AdminManageBookings />} />
         <Route path="/AdminManageUsers" element={<AdminManageUsers />} />
         <Route path="/AdminDash" element={<AdminDash />} />
+        <Route path="/BookACarImmediately" element={<BookACarImmediately />} />
         
       </Routes>
     </Router>
