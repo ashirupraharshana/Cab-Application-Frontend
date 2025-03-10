@@ -213,6 +213,7 @@ const handlePayManually = (bookingId) => {
             <Nav.Link as={Link} to="/DriverDash">My Bookings</Nav.Link>
 
             <Nav.Link onClick={(e) => e.preventDefault()}>Conformed Bookings</Nav.Link>
+            <Nav.Link as={Link} to="/DriverEarning">Driver Earning</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>

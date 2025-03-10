@@ -30,6 +30,7 @@ function DriverEarning() {
             <Nav className="ms-auto">
               <Nav.Link as={Link} to="/DriverDash">My Bookings</Nav.Link>
               <Nav.Link as={Link} to="/DriverConformedBookings">Confirmed Bookings</Nav.Link>
+              <Nav.Link onClick={(e) => e.preventDefault()}>Driver Earning</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>
