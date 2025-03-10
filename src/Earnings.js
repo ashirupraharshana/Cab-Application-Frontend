@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Alert, Table } from "react-bootstrap";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { Container, Alert, Table, Navbar, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, BarChart, Bar
+} from "recharts";
 
 function Earnings() {
   const [bookings, setBookings] = useState([]);
@@ -37,63 +40,84 @@ function Earnings() {
   }, []);
 
   return (
-    <Container className="mt-4">
-      <h3 className="text-center mb-4">Earnings - Paid Bookings</h3>
+    <>
+      {/* Navbar */}
+      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+        <Container>
+          <Navbar.Brand as={Link} to="/">Admin</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Nav.Link as={Link} to="/AdminDash">Manage Cars</Nav.Link>
+              <Nav.Link as={Link} to="/AdminManageDrivers">Manage Drivers</Nav.Link>
+              <Nav.Link as={Link} to="/AdminManageUsers">Manage Users</Nav.Link>
+              <Nav.Link as={Link} to="/AdminViewBookings">Assign Drivers</Nav.Link>
+              <Nav.Link as={Link} to="/AdminManageBookings">Manage Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/Earnings">View Earnings</Nav.Link>
+              <Nav.Link as={Link} to="/">Logout</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-      {/* Total Earnings */}
-      <Alert variant="success" className="text-center fw-bold">
-        Total Earnings: ${totalEarnings.toFixed(2)}
-      </Alert>
+      <Container className="mt-4">
+        <h3 className="text-center mb-4">Earnings - Paid Bookings</h3>
 
-      {/* Earnings Graph */}
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="earnings" fill="#82ca9d" />
-        </BarChart>
-      </ResponsiveContainer>
+        {/* Total Earnings */}
+        <Alert variant="success" className="text-center fw-bold">
+          Total Earnings: ${totalEarnings.toFixed(2)}
+        </Alert>
 
-      {/* Earnings Table */}
-      <Table striped bordered hover responsive className="mt-4">
-        <thead className="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>User ID</th>
-            <th>Car ID</th>
-            <th>Driver ID</th>
-            <th>Location</th>
-            <th>Time</th>
-            <th>Travel Distance</th>
-            <th>Total Fee ($)</th>
-            <th>Payment Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.length > 0 ? (
-            bookings.map((booking) => (
-              <tr key={booking.id}>
-                <td>{booking.id}</td>
-                <td>{booking.userid}</td>
-                <td>{booking.carid}</td>
-                <td>{booking.driverid !== "-1" ? booking.driverid : "Unassigned"}</td>
-                <td>{booking.location}</td>
-                <td>{booking.time}</td>
-                <td>{booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"}</td>
-                <td>${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</td>
-                <td className="text-success fw-bold">Paid</td>
-              </tr>
-            ))
-          ) : (
+        {/* Earnings Graph */}
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="earnings" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+
+        {/* Earnings Table */}
+        <Table striped bordered hover responsive className="mt-4">
+          <thead className="table-dark">
             <tr>
-              <td colSpan="9" className="text-center">No paid bookings found.</td>
+              <th>ID</th>
+              <th>User ID</th>
+              <th>Car ID</th>
+              <th>Driver ID</th>
+              <th>Location</th>
+              <th>Time</th>
+              <th>Travel Distance</th>
+              <th>Total Fee ($)</th>
+              <th>Payment Status</th>
             </tr>
-          )}
-        </tbody>
-      </Table>
-    </Container>
+          </thead>
+          <tbody>
+            {bookings.length > 0 ? (
+              bookings.map((booking) => (
+                <tr key={booking.id}>
+                  <td>{booking.id}</td>
+                  <td>{booking.userid}</td>
+                  <td>{booking.carid}</td>
+                  <td>{booking.driverid !== "-1" ? booking.driverid : "Unassigned"}</td>
+                  <td>{booking.location}</td>
+                  <td>{new Date(booking.time).toLocaleString()}</td>
+                  <td>{booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"}</td>
+                  <td>${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</td>
+                  <td className="text-success fw-bold">Paid</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="9" className="text-center">No paid bookings found.</td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </Container>
+    </>
   );
 }
 
