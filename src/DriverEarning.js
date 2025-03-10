@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav, Container, Card, Row, Col } from "react-bootstrap";
+import { Navbar, Nav, Container, Card, Row, Col, Button, Modal } from "react-bootstrap";
+import { Line } from "react-chartjs-2";
 import { Link } from "react-router-dom";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function DriverEarning() {
   const driverId = localStorage.getItem("userId");
   const [bookings, setBookings] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8080/bookings/all")
@@ -19,6 +24,18 @@ function DriverEarning() {
   }, [driverId]);
 
   const totalEarning = bookings.reduce((sum, booking) => sum + (booking.totalfee || 0), 0);
+
+  const graphData = {
+    labels: bookings.map((booking) => `Booking ${booking.id}`),
+    datasets: [
+      {
+        label: "Driver's 10% Commission",
+        data: bookings.map((booking) => booking.totalfee * 0.10),
+        borderColor: "#4CAF50",
+        backgroundColor: "rgba(76, 175, 80, 0.2)",
+      },
+    ],
+  };
 
   return (
     <>
@@ -46,6 +63,9 @@ function DriverEarning() {
         <Card className="mb-4 text-center p-4 shadow-lg bg-success text-white rounded-4">
           <h4 className="display-6">Total Earnings: <strong>${totalEarning.toFixed(2)}</strong></h4>
           <h5 className="mt-2">Your Share (10%): <strong>${(totalEarning * 0.10).toFixed(2)}</strong></h5>
+          <Button variant="light" className="mt-3" onClick={() => setShowModal(true)}>
+            View Commission Graph
+          </Button>
         </Card>
 
         {bookings.length > 0 ? (
@@ -56,7 +76,7 @@ function DriverEarning() {
                   <Card.Body>
                     <Card.Title className="text-primary fw-bold">Booking ID: {booking.id}</Card.Title>
                     <Card.Text className="text-muted small">
-                      <strong>User ID:</strong> {booking.userid} <br />
+                      <strong>User ID:</strong> {booking.userid === -1 ? "Unknown" : booking.userid} <br />
                       <strong>Car ID:</strong> {booking.carid} <br />
                       <strong>Location:</strong> {booking.location} <br />
                       <strong>Time:</strong> {booking.time} <br />
@@ -75,6 +95,16 @@ function DriverEarning() {
           <p className="text-center text-muted mt-4">No earnings to display</p>
         )}
       </Container>
+
+      {/* Modal for Line Graph */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Driver's Commission Graph</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Line data={graphData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
