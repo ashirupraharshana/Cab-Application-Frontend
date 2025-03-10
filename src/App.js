@@ -21,7 +21,7 @@ import BookACarImmediately from "./BookACarImmediately";
 import ViewBookingWithoutLogin from "./ViewBookingWithoutLogin";
 import UserViewNotPaidBookings from "./UserViewNotPaidBookings";
 import Earnings from "./Earnings";
-import DriverEarnings from "./DriverEarnings";
+import DriverEarning from "./DriverEarning";
 
 
 
@@ -174,7 +174,7 @@ export default function App() {
         <Route path="/ViewBookingWithoutLogin" element={<ViewBookingWithoutLogin />} />
         <Route path="/UserViewNotPaidBookings" element={<UserViewNotPaidBookings />} />
         <Route path="/Earnings" element={<Earnings />} />
-        <Route path="/DriverEarnings" element={<DriverEarnings />} />
+        <Route path="/DriverEarning" element={<DriverEarning />} />
       </Routes>
     </Router>
   );

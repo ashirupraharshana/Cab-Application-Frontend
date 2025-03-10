@@ -104,6 +104,7 @@ function DriverDash() {
             <Nav className="ms-auto">
               <Nav.Link onClick={(e) => e.preventDefault()}>My Bookings</Nav.Link>
               <Nav.Link as={Link} to="/DriverConformedBookings">Confirmed Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/DriverEarning">Driver Earning</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>
