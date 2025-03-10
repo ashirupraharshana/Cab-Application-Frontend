@@ -89,6 +89,16 @@ function UserBookCar() {
       alert("Booking failed. Try again.");
     }
   };
+  const [searchQuery, setSearchQuery] = useState("");
+
+const handleSearchChange = (e) => {
+  setSearchQuery(e.target.value);
+};
+const filteredCars = cars.filter((car) =>
+  car.model.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
+
   
 
   return (
@@ -111,32 +121,46 @@ function UserBookCar() {
       </Navbar>
 
       <Container>
-        <h2 className="text-center my-4">Book a Car</h2>
+  
 
-        <Row>
-          {cars.map((car) => (
-            <Col key={car.id} md={4} className="mb-4">
-              <Card>
-                <Card.Img
-                  variant="top"
-                  src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
-                  alt={car.model}
-                  style={{ height: "200px", objectFit: "cover" }}
-                />
-                <Card.Body>
-                  <Card.Title>{car.model}</Card.Title>
-                  <Card.Text>
-                    <strong>License Plate:</strong> {car.licensePlate} <br />
-                    <strong>Seats:</strong> {car.seats} <br />
-                    <strong>Capacity:</strong> {car.capacity} CC <br />
-                    <strong>Price per Km:</strong> ${car.pricePerKm} <br />
-                  </Card.Text>
-                  <Button variant="primary" onClick={() => handleBookNow(car.id)}>Book Now</Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+  {/* Search Bar */}
+  <Row className="mb-3">
+    <Col md={{ span: 6, offset: 3 }}>
+      <Form.Control
+        type="text"
+        placeholder="Search by car model..."
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
+    </Col>
+  </Row>
+
+  <Row>
+    {filteredCars.map((car) => (
+      <Col key={car.id} md={4} className="mb-4">
+        <Card>
+          <Card.Img
+            variant="top"
+            src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
+            alt={car.model}
+            style={{ height: "200px", objectFit: "cover" }}
+          />
+          <Card.Body>
+            <Card.Title>{car.model}</Card.Title>
+            <Card.Text>
+              <strong>License Plate:</strong> {car.licensePlate} <br />
+              <strong>Seats:</strong> {car.seats} <br />
+              <strong>Capacity:</strong> {car.capacity} CC <br />
+              <strong>Price per Km:</strong> ${car.pricePerKm} <br />
+            </Card.Text>
+            <Button variant="primary" onClick={() => handleBookNow(car.id)}>Book Now</Button>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))}
+  </Row>
+</Container>
+
 
         {/* Booking Modal */}
         <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -182,7 +206,7 @@ function UserBookCar() {
             </Form>
           </Modal.Body>
         </Modal>
-      </Container>
+      
     </>
   );
 }
