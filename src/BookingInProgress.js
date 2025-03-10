@@ -7,6 +7,7 @@ function DriverDash() {
   const [bookings, setBookings] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [cars, setCars] = useState({});
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -85,6 +86,33 @@ function DriverDash() {
       alert("Payment failed. Please try again.");
     }
   };
+
+  useEffect(() => {
+    const fetchCarDetails = async () => {
+      const carData = {};
+      await Promise.all(
+        bookings.map(async (booking) => {
+          if (!carData[booking.carid]) {
+            try {
+              const response = await fetch(`http://localhost:8080/cars/${booking.carid}`);
+              if (response.ok) {
+                const carInfo = await response.json();
+                carData[booking.carid] = carInfo;
+              }
+            } catch (error) {
+              console.error(`Error fetching car details for car ID ${booking.carid}:`, error);
+            }
+          }
+        })
+      );
+      setCars(carData);
+    };
+  
+    if (bookings.length > 0) {
+      fetchCarDetails();
+    }
+  }, [bookings]);
+  
   
   return (
     <>
@@ -113,28 +141,52 @@ function DriverDash() {
           <ListGroup>
             {filteredBookings.map((booking) => (
               <ListGroup.Item key={booking.id} className="mb-3">
-                <Card>
-                  <Card.Body>
-                    <Card.Title>Booking ID: {booking.id}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">User ID: {booking.userid}</Card.Subtitle>
-                    <Card.Text>
-                      <strong>Car ID:</strong> {booking.carid} <br />
-                      <strong>Location:</strong> {booking.location} <br />
-                      <strong>Time:</strong> {booking.time} <br />
-                      <strong>Distance:</strong>{" "}
-                      {booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"} <br />
-                      <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-                      <strong>Payment Status:</strong> <span className="text-danger">Unpaid</span>
-                    </Card.Text>
+             <Card className="d-flex flex-row align-items-center">
+  {/* Car Photo (Left Side) */}
+  {cars[booking.carid] && cars[booking.carid].photo ? (
+    <div className="flex-shrink-0">
+      <img
+        src={
+          cars[booking.carid].photo.startsWith("http") || cars[booking.carid].photo.startsWith("data:image")
+            ? cars[booking.carid].photo
+            : `data:image/jpeg;base64,${cars[booking.carid].photo}`
+        }
+        alt={cars[booking.carid].model}
+        className="img-fluid rounded-start"
+        style={{ width: "150px", height: "150px", objectFit: "cover" }}
+      />
+    </div>
+  ) : (
+    <div
+      className="d-flex align-items-center justify-content-center bg-light"
+      style={{ width: "150px", height: "150px", color: "#888" }}
+    >
+      No Image Available
+    </div>
+  )}
 
-                    {/* Pay Online Button - Positioned at bottom right */}
-                    <div className="d-flex justify-content-end">
-                      <Button variant="success" onClick={() => handleShowModal(booking)}>
-                        Pay Online
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
+  {/* Booking Details (Right Side) */}
+  <Card.Body>
+    <Card.Title>Booking ID: {booking.id}</Card.Title>
+    <Card.Subtitle className="mb-2 text-muted">User ID: {booking.userid}</Card.Subtitle>
+    <Card.Text>
+      <strong>Car ID:</strong> {booking.carid} <br />
+      <strong>Location:</strong> {booking.location} <br />
+      <strong>Time:</strong> {booking.time} <br />
+      <strong>Distance:</strong> {booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"} <br />
+      <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
+      <strong>Payment Status:</strong> <span className="text-danger">Unpaid</span>
+    </Card.Text>
+
+    {/* Pay Online Button - Positioned at bottom right */}
+    <div className="d-flex justify-content-end">
+      <Button variant="success" onClick={() => handleShowModal(booking)}>
+        Pay Online
+      </Button>
+    </div>
+  </Card.Body>
+</Card>
+
               </ListGroup.Item>
             ))}
           </ListGroup>

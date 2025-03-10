@@ -78,73 +78,62 @@ function ViewMyBookings() {
   </div>
 </Navbar>
 
-
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>My Bookings</h2>
-      {bookings.length > 0 ? (
-        bookings.map((booking) => {
-          const car = cars[booking.carid];
-          return (
-            <div key={booking.id} style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "15px", marginBottom: "20px", boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }}>
+<div className="container">
+  <h2 className="text-center my-4">My Bookings</h2>
+  {bookings.length > 0 ? (
+    <div className="row justify-content-center">
+      {bookings.map((booking) => {
+        const car = cars[booking.carid];
+        return (
+          <div key={booking.id} className="col-md-3 mb-4 d-flex justify-content-center">
+            <div className="card shadow-lg" style={{ width: "18rem" }}>
               {car && car.photo ? (
-        <img
-        src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
-        alt={car.model}
-        style={{
-          width: "300px", // Makes sure the image fits the container
-          height: "300px", // Ensures aspect ratio is maintained
-          display: "block", // Prevents inline spacing issues
-          margin: "auto", // Centers the image
-          borderRadius: "10px", // Rounded corners for a cleaner look
-        }}
-      />
-      
+                <img
+                  src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
+                  alt={car.model}
+                  className="card-img-top"
+                  style={{ height: "200px", objectFit: "cover" }}
+                />
               ) : (
-                <p style={{ textAlign: "center", fontStyle: "italic", color: "#888" }}>No car photo available</p>
+                <div className="card-img-top d-flex align-items-center justify-content-center" 
+                     style={{ height: "200px", backgroundColor: "#f0f0f0", color: "#888" }}>
+                  No Image Available
+                </div>
               )}
-
-              <h3 style={{ margin: "10px 0" }}>Booking ID: {booking.id}</h3>
-              {car && <p><strong>Car Model:</strong> {car.model}</p>}
-              <p><strong>Location:</strong> {booking.location}</p>
-              <p><strong>Time:</strong> {booking.time}</p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <span style={{ color: booking.bookstatus === 0 ? "orange" : "green", fontWeight: "bold" }}>
-                  {booking.bookstatus === 0 ? "Pending" : "Confirmed"}
-                </span>
-              </p>
-              <p><strong>Total Fee:</strong> ${booking.totalfee.toFixed(2)}</p>
-              <p>
-                <strong>Payment Status:</strong>{" "}
-                <span style={{ color: booking.paymentstatus === 0 ? "red" : "green", fontWeight: "bold" }}>
-                  {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
-                </span>
-              </p>
-              <button
-                onClick={() => handleDelete(booking.id)}
-                style={{
-                  backgroundColor: "red",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 15px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  display: "block",
-                  marginTop: "10px",
-                  width: "100%",
-                }}
-              >
-                Delete Booking
-              </button>
+              <div className="card-body text-center">
+              <h5 className="card-title d-none">Booking ID: {booking.id}</h5>
+                {car && <p className="card-text"><strong>Car:</strong> {car.model}</p>}
+                <p className="card-text"><strong>Location:</strong> {booking.location}</p>
+                <p className="card-text">
+                  <strong>Status:</strong> 
+                  <span className={`fw-bold ${booking.bookstatus === 0 ? "text-warning" : "text-success"}`}>
+                    {booking.bookstatus === 0 ? "Pending" : "Confirmed"}
+                  </span>
+                </p>
+                <p className="card-text"><strong>Fee:</strong> ${booking.totalfee.toFixed(2)}</p>
+                <p className="card-text">
+                  <strong>Payment:</strong> 
+                  <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
+                    {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
+                  </span>
+                </p>
+                <button
+                  onClick={() => handleDelete(booking.id)}
+                  className="btn btn-danger w-100"
+                >
+                  Delete Booking
+                </button>
+              </div>
             </div>
-          );
-        })
-      ) : (
-        <p style={{ textAlign: "center", fontSize: "18px", fontWeight: "bold", color: "#555" }}>
-          No bookings found for your account.
-        </p>
-      )}
+          </div>
+        );
+      })}
     </div>
+  ) : (
+    <p className="text-center fw-bold text-secondary fs-5">No bookings found for your account.</p>
+  )}
+</div>
+
     </>
   );
 }
