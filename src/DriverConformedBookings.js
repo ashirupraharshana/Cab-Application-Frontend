@@ -157,6 +157,19 @@ const handlePayManually = (bookingId) => {
         console.error("Error updating booking status, travel distance, or total fee:", error);
         alert("Error updating booking details.");
       });
+      fetch(`http://localhost:8080/cars/updateStatusToAvailable/${selectedBooking.carid}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to update car status");
+        return response.json();
+      })
+      .then(() => {
+        alert("Car status updated to Available!");
+      })
+      .catch(error => console.error("Error updating car status:", error));
+      
   };
   
   

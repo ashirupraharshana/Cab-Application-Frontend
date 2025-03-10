@@ -18,14 +18,19 @@ function UserBookCar() {
       try {
         const response = await fetch("http://localhost:8080/cars/all");
         const data = await response.json();
-        setCars(data);
+        
+        // Filter only cars with status = 0
+        const availableCars = data.filter(car => car.status === 0);
+        
+        setCars(availableCars);
       } catch (error) {
         console.error("Error fetching car details:", error);
       }
     };
-
+  
     fetchCars();
   }, []);
+  
 
   // Open modal with selected car ID
   const handleBookNow = (carId) => {
@@ -60,22 +65,31 @@ function UserBookCar() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/bookings/create", {
+      // Step 1: Create the booking
+      const bookingResponse = await fetch("http://localhost:8080/bookings/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingRequest),
       });
-
-      if (!response.ok) throw new Error("Booking failed");
-
-      alert("Booking successful!");
+  
+      if (!bookingResponse.ok) throw new Error("Booking failed");
+  
+      // Step 2: Update the car status to 1 (Available)
+      const statusUpdateResponse = await fetch(`http://localhost:8080/cars/updateStatus/${selectedCarId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!statusUpdateResponse.ok) throw new Error("Failed to update car status");
+  
+      alert("Booking successful! Car status updated.");
       setShowModal(false);
-      setBookingData({ idNumber: "", location: "", time: "" });
     } catch (error) {
-      console.error("Error booking car:", error);
+      console.error("Error:", error);
       alert("Booking failed. Try again.");
     }
   };
+  
 
   return (
     <>
