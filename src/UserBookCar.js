@@ -134,12 +134,36 @@ function UserBookCar() {
               />
               <Card.Body>
                 <Card.Title>{car.model}</Card.Title>
-                <Card.Text>
-                  <strong>License Plate:</strong> {car.licensePlate} <br />
-                  <strong>Seats:</strong> {car.seats} <br />
-                  <strong>Capacity:</strong> {car.capacity} CC <br />
-                  <strong>Price per Km:</strong> ${car.pricePerKm} <br />
-                </Card.Text>
+                <Card.Text className="p-3 bg-light rounded shadow-sm">
+  <div className="d-flex align-items-center">
+    <strong className="me-2 text-primary">
+      <i className="fas fa-car"></i> License Plate:
+    </strong>
+    <span className="fw-bold text-dark">{car.licensePlate}</span>
+  </div>
+
+  <div className="d-flex align-items-center mt-2">
+    <strong className="me-2 text-success">
+      <i className="fas fa-user-friends"></i> Seats:
+    </strong>
+    <span className="fw-bold text-dark">{car.seats}</span>
+  </div>
+
+  <div className="d-flex align-items-center mt-2">
+    <strong className="me-2 text-info">
+      <i className="fas fa-tachometer-alt"></i> Capacity:
+    </strong>
+    <span className="fw-bold text-dark">{car.capacity} CC</span>
+  </div>
+
+  <div className="d-flex align-items-center mt-2">
+    <strong className="me-2 text-danger">
+      <i className="fas fa-dollar-sign"></i> Price per Km:
+    </strong>
+    <span className="fw-bold text-dark">${car.pricePerKm}</span>
+  </div>
+</Card.Text>
+
                 <Button variant="primary" onClick={() => handleBookNow(car.id)}>
                   Book Now
                 </Button>

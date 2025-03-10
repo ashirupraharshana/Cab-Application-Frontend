@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav, Container, Card, Button, Modal, Form } from "react-bootstrap";
+import { Navbar, Nav, Container, Card, Button, Modal, Form, Row, Col, } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function DriverDash() {
@@ -10,6 +10,7 @@ function DriverDash() {
   const [travelDistance, setTravelDistance] = useState("");
   const [pricePerKm, setPricePerKm] = useState(null);
   const [totalCost, setTotalCost] = useState(0);
+  const [cars, setCars] = useState({});
 
   useEffect(() => {
     fetch("http://localhost:8080/bookings/all")
@@ -171,6 +172,32 @@ const handlePayManually = (bookingId) => {
       .catch(error => console.error("Error updating car status:", error));
       
   };
+
+  useEffect(() => {
+    const fetchCarDetails = async () => {
+      const uniqueCarIds = [...new Set(bookings.map((b) => b.carid))];
+      const carData = {};
+  
+      await Promise.all(
+        uniqueCarIds.map(async (carid) => {
+          try {
+            const response = await fetch(`http://localhost:8080/cars/${carid}`);
+            if (!response.ok) throw new Error("Failed to fetch car data");
+            const data = await response.json();
+            carData[carid] = data;
+          } catch (error) {
+            console.error(`Error fetching car details for carid ${carid}:`, error);
+          }
+        })
+      );
+  
+      setCars((prevCars) => ({ ...prevCars, ...carData }));
+    };
+  
+    if (bookings.length > 0) {
+      fetchCarDetails();
+    }
+  }, [bookings]);
   
   
 
@@ -192,48 +219,73 @@ const handlePayManually = (bookingId) => {
         </Container>
       </Navbar>
 
-      {/* Bookings */}
-      <Container>
-        <h4 className="text-center">Your Driver ID: {driverId || "Not Available"}</h4>
+ {/* Bookings Section */}
+<Container>
+<h3 className="text-center fw-bold my-4 text-primary d-none">Your Driver Dashboard</h3>
+<h5 className="text-center text-secondary mb-4 d-none">
+  Your Driver ID: <span className="fw-bold">{driverId || "Not Available"}</span>
+</h5>
 
-        {bookings.length > 0 ? (
-          bookings.map((booking) => (
-            <Card key={booking.id} className="mb-3 shadow-sm">
-              <Card.Body>
-                <Card.Title>Booking ID: {booking.id}</Card.Title>
-                <Card.Text>
-                  <strong>User ID:</strong> {booking.userid} <br />
-                  <strong>Car ID:</strong> {booking.carid} <br />
-                  <strong>Location:</strong> {booking.location} <br />
-                  <strong>Time:</strong> {booking.time} <br />
-                  <strong>Status:</strong> Confirmed <br />
-                  <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-                  <strong>Payment Status:</strong>{" "}
-                    <span style={{ color: booking.paymentstatus === 0 ? "red" : "green", fontWeight: "bold" }}>
-                    {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
+
+  {bookings.length > 0 ? (
+    bookings.map((booking) => (
+      <Card key={booking.id} className="mb-4 shadow-lg border-0" style={{ background: "#f8f9fa" }}>
+        <Card.Body className="p-4">
+          <Row className="align-items-center">
+            {/* Car Photo */}
+            <Col md={4} className="text-center">
+              {cars[booking.carid]?.photo ? (
+                <img
+                  src={cars[booking.carid].photo.startsWith("data:image") ? cars[booking.carid].photo : `data:image/jpeg;base64,${cars[booking.carid].photo}`}
+                  alt={`Car ${cars[booking.carid]?.model}`}
+                  className="img-fluid rounded shadow-sm"
+                  style={{ maxWidth: "100%", height: "180px", objectFit: "cover" }}
+                />
+              ) : (
+                <p className="text-muted">No photo available</p>
+              )}
+            </Col>
+
+            {/* Booking Details */}
+            <Col md={5}>
+              <Card.Title className="text-primary fw-bold mb-3">Booking ID: {booking.id}</Card.Title>
+              <Card.Text>
+                <strong className="text-secondary">User ID:</strong> {booking.userid} <br />
+                <strong className="text-secondary">Car ID:</strong> {booking.carid} <br />
+                <strong className="text-secondary">Location:</strong> {booking.location} <br />
+                <strong className="text-secondary">Time:</strong> {booking.time} <br />
+                <strong className="text-secondary">Status:</strong> <span className="text-success fw-bold">Confirmed</span> <br />
+                <strong className="text-secondary">Total Fee:</strong> <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                <strong className="text-secondary">Payment Status:</strong>{" "}
+                <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
+                  {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
                 </span>
+              </Card.Text>
+            </Col>
 
-                  
-                </Card.Text>
-                <Button variant="success" onClick={() => handleArrivedClick(booking)}>
-  Arrived
-</Button>
+            {/* Buttons */}
+            <Col md={3} className="text-center d-flex flex-column gap-2">
+              <Button variant="success" className="fw-bold px-4 py-2" onClick={() => handleArrivedClick(booking)}>
+                Arrived
+              </Button>
+              <Button 
+                variant="warning" 
+                className="fw-bold px-4 py-2" 
+                onClick={() => handlePayManually(booking.id)}
+                disabled={booking.paymentstatus === 1}
+              >
+                Paid Manually
+              </Button>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+    ))
+  ) : (
+    <p className="text-center mt-4 text-muted">No bookings found</p>
+  )}
+</Container>
 
-                <Button 
-  variant="warning" 
-  onClick={() => handlePayManually(booking.id)}
-  disabled={booking.paymentstatus === 1} // Disable if already paid
->
-  Paid Manually
-</Button>
-
-              </Card.Body>
-            </Card>
-          ))
-        ) : (
-          <p className="text-center mt-4">No bookings found</p>
-        )}
-      </Container>
 
       {/* Modal for Entering Travel Distance */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>

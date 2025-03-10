@@ -25,7 +25,7 @@ function DriverDash() {
 
   // Filter bookings where logged-in user ID matches booking.userid, bookstatus is 1 (Confirmed), and paymentstatus is 0 (Unpaid)
   const filteredBookings = bookings.filter(
-    (booking) => String(booking.userid) === userId && booking.bookstatus === 1 && booking.paymentstatus === 0
+    (booking) => String(booking.userid) === userId && booking.paymentstatus === 0
   );
 
   // Open Payment Modal
