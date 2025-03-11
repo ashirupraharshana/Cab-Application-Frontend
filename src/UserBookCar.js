@@ -117,10 +117,8 @@ function UserBookCar() {
 
     
     <Container>
-      <h2 className="text-center my-4">Book a Car</h2>
-      
       {/* Display Logged-in User ID */}
-      <h5 className="text-center text-primary">Logged in as User ID: {userId}</h5>
+      <h5 className="text-center text-primary" style={{ display: "none" }}>Logged in as User ID: {userId}</h5>
 
       <Row>
         {cars.map((car) => (
