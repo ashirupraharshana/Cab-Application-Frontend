@@ -54,6 +54,7 @@ function Earnings() {
               <Nav.Link as={Link} to="/AdminViewBookings">Assign Drivers</Nav.Link>
               <Nav.Link as={Link} to="/AdminManageBookings">Manage Bookings</Nav.Link>
               <Nav.Link as={Link} to="/Earnings">View Earnings</Nav.Link>
+              <Nav.Link as={Link} to="/ViewEarningFromEachDriver">Each Driver Earnings </Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>
