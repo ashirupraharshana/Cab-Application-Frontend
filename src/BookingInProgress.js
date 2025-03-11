@@ -201,10 +201,11 @@ function DriverDash() {
   variant="success"
   className="fw-bold px-4 py-2"
   onClick={() => handleShowModal(booking)}
-  disabled={booking.bookstatus === 2} // Disable when booking is cancelled
+  disabled={booking.bookstatus === 0 || booking.bookstatus === 2} // Disable when status is 0 (Cancelled) or 2
 >
   Pay Online
 </Button>
+
 
             </Col>
           </Row>
