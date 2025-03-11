@@ -26,6 +26,7 @@ import ViewEarningFromEachDriver from "./ViewEarningFromEachDriver";
 import AboutUs from "./AboutUs";
 import ViewBookingAllWithoutLogin from "./ViewBookingAllWithoutLogin";
 import AboutUsWithoutLogin from "./AboutUsWithoutLogin";
+import AdminCancelledBoolings from "./AdminCancelledBoolings";
 
 
 function LoginRegister() {
@@ -182,7 +183,8 @@ export default function App() {
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/ViewBookingAllWithoutLogin" element={<ViewBookingAllWithoutLogin />} />
         <Route path="/AboutUsWithoutLogin" element={<AboutUsWithoutLogin />} />
-      
+        <Route path="/AdminCancelledBoolings" element={<AdminCancelledBoolings />} />
+        
       </Routes>
     </Router>
   );
