@@ -166,9 +166,10 @@ const handlePaymentSubmit = async (e) => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/BookACarImmediately">Book A Car</Nav.Link>
+              <Nav.Link as={Link} to="/BookACarImmediately">Book a Car</Nav.Link>
               <Nav.Link as={Link} to="/ViewBookingWithoutLogin">View Bookings</Nav.Link>
-              <Nav.Link as={Link} to="/">Get Out</Nav.Link>
+              <Nav.Link as={Link} to="/ViewBookingAllWithoutLogin">Pay for Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/">Login</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
