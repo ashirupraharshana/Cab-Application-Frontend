@@ -20,7 +20,7 @@ function DriverDash() {
           data.filter(
             (booking) =>
               String(booking.driverid) === driverId &&
-              booking.bookstatus === 1 &&
+              booking.bookstatus === 1 || booking.bookstatus ==2 &&
               booking.paymentstatus === 0 // Only show unpaid bookings
           )
         )

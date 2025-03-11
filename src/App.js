@@ -59,7 +59,7 @@ function LoginRegister() {
         } else if (userRole === 1) {
           navigate('/driver');
         } else if (userRole === 2) {
-          navigate('/user');  // Navigate to UserDash
+          navigate('/UserBookCar');  // Navigate to UserDash
         } else {
           setMessage('Invalid user role.');
         }
@@ -177,8 +177,6 @@ export default function App() {
         <Route path="/Earnings" element={<Earnings />} />
         <Route path="/DriverEarning" element={<DriverEarning />} />
         <Route path="/ViewEarningFromEachDriver" element={<ViewEarningFromEachDriver />} />
-
-        
       </Routes>
     </Router>
   );

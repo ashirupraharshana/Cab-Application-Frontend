@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, Container, Form, Button, Table, Alert } from "react-bootstrap";
+import { Navbar, Nav, Container, Form, Button, Alert, Card, Row, Col } from "react-bootstrap";
 
 const ViewBookingWithoutLogin = () => {
   const [idNumber, setIdNumber] = useState("");
   const [bookings, setBookings] = useState([]); // Store multiple bookings
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [drivers, setDrivers] = useState({});
+  const [cars, setCars] = useState({});
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -25,15 +27,64 @@ const ViewBookingWithoutLogin = () => {
       if (!response.ok) throw new Error("No bookings found for this ID Number");
 
       const data = await response.json();
-      setBookings(data);
-      if (data.length === 0) {
-        setError("No bookings found for this ID Number.");
+
+      // Filter only unpaid bookings
+      const unpaidBookings = data.filter((booking) => booking.paymentstatus === 0);
+      setBookings(unpaidBookings);
+
+      if (unpaidBookings.length === 0) {
+        setError("No unpaid bookings found for this ID Number.");
+      } else {
+        fetchDrivers(unpaidBookings);
+        fetchCars(unpaidBookings);
       }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false); // Reset loading state
     }
+  };
+
+  // Fetch driver details using driverid
+  const fetchDrivers = async (bookings) => {
+    const driverIds = [...new Set(bookings.map((booking) => booking.driverid))];
+    const driverData = {};
+    await Promise.all(
+      driverIds.map(async (driverId) => {
+        if (driverId !== "-1") {
+          try {
+            const response = await fetch(`http://localhost:8080/drivers/${driverId}`);
+            const driver = await response.json();
+            driverData[driverId] = driver.name;
+          } catch (error) {
+            console.error(`Error fetching driver ${driverId}:`, error);
+            driverData[driverId] = "Unknown Driver";
+          }
+        } else {
+          driverData[driverId] = "Driver Not Assigned";
+        }
+      })
+    );
+    setDrivers(driverData);
+  };
+
+  // Fetch car details using carid
+  const fetchCars = async (bookings) => {
+    const carIds = [...new Set(bookings.map((booking) => booking.carid))];
+    const carData = {};
+    await Promise.all(
+      carIds.map(async (carId) => {
+        try {
+          const response = await fetch(`http://localhost:8080/cars/${carId}`);
+          const car = await response.json();
+          carData[carId] = { name: car.model, photo: car.photo };
+        } catch (error) {
+          console.error(`Error fetching car ${carId}:`, error);
+          carData[carId] = { name: "Unknown Car", photo: "" };
+        }
+      })
+    );
+    setCars(carData);
   };
 
   return (
@@ -76,38 +127,38 @@ const ViewBookingWithoutLogin = () => {
         {/* Display error message if any */}
         {error && <Alert variant="danger">{error}</Alert>}
 
-        {/* Display multiple bookings in a table */}
+        {/* Display bookings in gallery view */}
         {bookings.length > 0 && (
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Booking ID</th>
-                <th>Car ID</th>
-                <th>Driver ID</th>
-                <th>Location</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Payment</th>
-                <th>Total Fee</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td>{booking.id}</td>
-                  <td>{booking.carid}</td>
-                  <td className={booking.driverid === "-1" ? "text-danger" : ""}>
-                    {booking.driverid === "-1" ? "Driver Not Assigned" : booking.driverid}
-                  </td>
-                  <td>{booking.location}</td>
-                  <td>{booking.time}</td>
-                  <td>{booking.bookstatus === 0 ? "Pending" : "Confirmed"}</td>
-                  <td>{booking.paymentstatus === 0 ? "Unpaid" : "Paid"}</td>
-                  <td>${booking.totalfee}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <Row>
+            {bookings.map((booking) => (
+              <Col md={4} key={booking.id} className="mb-4">
+                <Card>
+                  <Card.Img
+                    variant="top"
+                    src={
+                      cars[booking.carid]?.photo?.startsWith("data:image")
+                        ? cars[booking.carid].photo
+                        : `data:image/jpeg;base64,${cars[booking.carid]?.photo || ""}`
+                    }
+                    alt={cars[booking.carid]?.name || "Car Image"}
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                  <Card.Body>
+                    <Card.Title>{cars[booking.carid]?.name || "Unknown Car"}</Card.Title>
+                    <Card.Text>
+                      <strong>Driver:</strong> {drivers[booking.driverid] || "Loading..."} <br />
+                      <strong>Location:</strong> {booking.location} <br />
+                      <strong>Time:</strong> {booking.time} <br />
+                      <strong>Status:</strong> {booking.bookstatus === 0 ? "Pending" : "Confirmed"} <br />
+                      <strong>Payment:</strong> {booking.paymentstatus === 0 ? "Unpaid" : "Paid"} <br />
+                      <strong>Total Fee:</strong> ${booking.totalfee}
+                      <button>Pay</button>
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         )}
 
         {/* If no bookings found */}
