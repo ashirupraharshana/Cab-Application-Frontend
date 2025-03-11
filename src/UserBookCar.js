@@ -106,7 +106,7 @@ function UserBookCar() {
         <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
         <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
         <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
-        <Nav.Link as={Link} to="/UserBookingHistory">Booking History</Nav.Link>
+        
         <Nav.Link as={Link} to="/UserViewNotPaidBookings">Not Paid Bookings</Nav.Link>
         <Nav.Link as={Link} to="/">Logout</Nav.Link>
       </Nav>
