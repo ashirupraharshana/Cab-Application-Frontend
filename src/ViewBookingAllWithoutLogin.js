@@ -57,7 +57,7 @@ const ViewBookingWithoutLogin = () => {
       {/* Navbar */}
       <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
         <Container>
-          <Navbar.Brand as={Link} to="/">User Dashboard</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">Mega City Cab</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
@@ -111,7 +111,11 @@ const ViewBookingWithoutLogin = () => {
                       <strong>Time:</strong> {booking.time} <br />
                       <strong>Status:</strong> 
                       <span className={`badge ${booking.bookstatus === 0 ? "bg-warning text-dark" : "bg-success"}`}>
-                        {booking.bookstatus === 0 ? "Pending" : "Confirmed"}
+                      {booking.bookstatus === 0
+  ? "Pending"
+  : booking.bookstatus === 1
+  ? "In Progress"
+  : "Cancelled"}
                       </span> <br />
                       <strong>Payment:</strong> 
                       <span className={`badge ${booking.paymentstatus === 0 ? "bg-danger" : "bg-success"}`}>

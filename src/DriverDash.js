@@ -6,7 +6,6 @@ function DriverDash() {
   const driverId = localStorage.getItem("userId");
   const [bookings, setBookings] = useState([]);
   const [cars, setCars] = useState({});
-  const [loadingCars, setLoadingCars] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8080/bookings/all")
@@ -21,9 +20,8 @@ function DriverDash() {
       const carIds = [...new Set(bookings.map((b) => b.carid))];
       const newCarIds = carIds.filter((id) => !cars[id]);
       if (newCarIds.length === 0) return;
-      setLoadingCars(true);
-      const carData = {};
 
+      const carData = {};
       await Promise.all(
         newCarIds.map(async (carid) => {
           try {
@@ -38,7 +36,6 @@ function DriverDash() {
       );
 
       setCars((prevCars) => ({ ...prevCars, ...carData }));
-      setLoadingCars(false);
     };
 
     fetchCarDetails();
@@ -115,72 +112,65 @@ function DriverDash() {
         <h4 className="text-center mb-4">Your Driver ID: {driverId || "Not Available"}</h4>
 
         {filteredBookings.length > 0 ? (
-          <Row className="g-4">
-            {filteredBookings.map((booking) => {
-              const car = cars[booking.carid];
+          filteredBookings.map((booking) => (
+            <Card key={booking.id} className="mb-4 shadow-lg border-0" style={{ background: "#f8f9fa" }}>
+              <Card.Body className="p-4">
+                <Row className="align-items-center">
+                  {/* Car Photo */}
+                  <Col md={4} className="text-center">
+                    {cars[booking.carid]?.photo ? (
+                      <img
+                        src={cars[booking.carid].photo.startsWith("data:image") ? cars[booking.carid].photo : `data:image/jpeg;base64,${cars[booking.carid].photo}`}
+                        alt={`Car ${cars[booking.carid]?.model}`}
+                        className="img-fluid rounded shadow-sm"
+                        style={{ maxWidth: "100%", height: "180px", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <p className="text-muted">No photo available</p>
+                    )}
+                  </Col>
 
-              return (
-                <Col key={booking.id} xs={12} md={6} lg={4}>
-                  <Card className="shadow-sm">
-                    <Card.Body>
-                      <Card.Title className="text-center">Booking ID: {booking.id}</Card.Title>
+                  {/* Booking Details */}
+                  <Col md={5}>
+                    <Card.Title className="text-primary fw-bold mb-3">Booking ID: {booking.id}</Card.Title>
+                    <Card.Text>
+                      <strong className="text-secondary">User ID:</strong> {booking.userid} <br />
+                      <strong className="text-secondary">Car ID:</strong> {booking.carid} <br />
+                      <strong className="text-secondary">Location:</strong> {booking.location} <br />
+                      <strong className="text-secondary">Time:</strong> {booking.time} <br />
+                      <strong className="text-secondary">Status:</strong>{" "}
+                      <span className="fw-bold" style={{ color: booking.bookstatus === 1 ? "blue" : "orange" }}>
+                        {booking.bookstatus === 1 ? "In Progress" : "Pending"}
+                      </span>
+                      <br />
+                      <strong className="text-secondary">Total Fee:</strong>{" "}
+                      <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                      <strong className="text-secondary">Payment Status:</strong>{" "}
+                      <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
+                        {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
+                      </span>
+                    </Card.Text>
+                  </Col>
 
-                      {car && (
-                        <>
-                          <p className="text-center">
-                            <strong>Car:</strong> {car.model}
-                          </p>
-
-                          {car?.photo ? (
-                            <div className="text-center">
-                              <img
-                                src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
-                                alt={car.model}
-                                className="img-fluid rounded shadow"
-                                style={{ maxWidth: "100%", height: "200px", objectFit: "cover" }}
-                              />
-                            </div>
-                          ) : (
-                            <p className="text-muted text-center">No photo available</p>
-                          )}
-                        </>
-                      )}
-
-                      <Card.Text className="mt-3">
-                        <strong>Location:</strong> {booking.location} <br />
-                        <strong>Time:</strong> {booking.time} <br />
-                        <strong>Status:</strong>{" "}
-                        <span
-                          className={
-                            booking.bookstatus === 0
-                              ? "text-warning"
-                              : booking.bookstatus === 1
-                              ? "text-primary"
-                              : "text-danger"
-                          }
-                        >
-                          {booking.bookstatus === 0 ? "Pending" : booking.bookstatus === 1 ? "In Progress" : "Cancelled"}
-                        </span>
-                        <br />
-                        <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-                        <strong>Payment Status:</strong>{" "}
-                        <span className={booking.paymentstatus === 0 ? "text-danger" : "text-success"}>
-                          {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
-                        </span>
-                      </Card.Text>
-
-                      <div className="d-flex justify-content-between">
-                        <Button variant="success" onClick={() => handleConfirm(booking.id)}>Confirm</Button>
-                        <Button variant="danger" onClick={() => handleCancel(booking.id)}>Cancel</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
+                  {/* Buttons */}
+                  <Col md={3} className="text-center d-flex flex-column gap-2">
+                    <Button variant="success" className="fw-bold px-4 py-2" onClick={() => handleConfirm(booking.id)}>
+                      Confirm
+                    </Button>
+                    <Button
+                      variant="danger"
+                      className="fw-bold px-4 py-2"
+                      onClick={() => handleCancel(booking.id)}
+                    >
+                      Cancel
+                    </Button>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          ))
         ) : (
-          <p className="text-center">No bookings found</p>
+          <p className="text-center mt-4 text-muted">No bookings found</p>
         )}
       </Container>
     </>

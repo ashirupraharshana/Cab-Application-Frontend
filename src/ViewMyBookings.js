@@ -64,7 +64,7 @@ function ViewMyBookings() {
     {/* Navbar */}
 <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
   <div className="container">
-    <Navbar.Brand as={Link} to="/">User Dashboard</Navbar.Brand>
+    <Navbar.Brand as={Link} to="/">Mega City Cab</Navbar.Brand>
     <Navbar.Toggle aria-controls="basic-navbar-nav" />
     <Navbar.Collapse id="basic-navbar-nav">
       <Nav className="ms-auto">
