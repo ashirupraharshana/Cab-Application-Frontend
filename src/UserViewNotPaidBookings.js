@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Container, ListGroup, Navbar, Nav, Button, Image, Modal, Form } from "react-bootstrap";
+import { Card, Container, ListGroup, Navbar, Nav, Button, Image, Modal, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function UserViewNotPaidBookings() {
@@ -124,54 +124,65 @@ function UserViewNotPaidBookings() {
       </Navbar>
 
       <Container className="mt-4">
-        <h4 className="text-center mb-4">Unpaid Bookings</h4>
-        {bookings.length > 0 ? (
-          <ListGroup>
-            {bookings.map((booking) => (
-              <ListGroup.Item key={booking.id} className="mb-3">
-                <Card className="d-flex flex-row align-items-center">
-                  {/* Car Image */}
-                  <Image
-                    src={
-                      cars[booking.carid]?.photo?.startsWith("data:image")
-                        ? cars[booking.carid].photo
-                        : `data:image/jpeg;base64,${cars[booking.carid]?.photo || ""}`
-                    }
-                    alt={cars[booking.carid]?.name || "Car Image"}
-                    style={{
-                      width: "150px",
-                      height: "100px",
-                      objectFit: "cover",
-                      marginRight: "20px",
-                      borderRadius: "8px",
-                    }}
-                  />
+  <h4 className="text-center mb-4">Unpaid Bookings</h4>
 
-                  {/* Booking Details */}
-                  <Card.Body>
-                    <Card.Title>Booking ID: {booking.id}</Card.Title>
-                    <Card.Text>
-                      <strong>Car:</strong> {cars[booking.carid]?.name || "Unknown Car"} <br />
-                      <strong>Location:</strong> {booking.location} <br />
-                      <strong>Time:</strong> {booking.time} <br />
-                      <strong>Distance:</strong> {booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"} <br />
-                      <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-                      <strong>Payment Status:</strong> <span className="text-danger">Unpaid</span>
-                    </Card.Text>
-                  </Card.Body>
+  {bookings.length > 0 ? (
+    bookings.map((booking) => (
+      <Card key={booking.id} className="mb-4 shadow-lg border-0" style={{ background: "#f8f9fa" }}>
+        <Card.Body className="p-4">
+          <Row className="align-items-center">
 
-                  {/* Pay Button */}
-                  <Button variant="success" onClick={() => handleShowModal(booking)} className="m-3">
-                    Pay Now
-                  </Button>
-                </Card>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        ) : (
-          <p className="text-center">No unpaid bookings found.</p>
-        )}
-      </Container>
+            {/* Car Photo */}
+            <Col md={4} className="text-center">
+              {cars[booking.carid]?.photo ? (
+                <img
+                  src={cars[booking.carid].photo.startsWith("data:image")
+                    ? cars[booking.carid].photo
+                    : `data:image/jpeg;base64,${cars[booking.carid].photo}`}
+                  alt={cars[booking.carid]?.name || "Car Image"}
+                  className="img-fluid rounded shadow-sm"
+                  style={{ maxWidth: "100%", height: "180px", objectFit: "cover" }}
+                />
+              ) : (
+                <p className="text-muted">No photo available</p>
+              )}
+            </Col>
+
+            {/* Booking Details */}
+            <Col md={5}>
+              <Card.Title className="text-primary fw-bold mb-3">Booking ID: {booking.id}</Card.Title>
+              <Card.Text>
+                <strong className="text-secondary">Car:</strong> {cars[booking.carid]?.name || "Unknown Car"} <br />
+                <strong className="text-secondary">Location:</strong> {booking.location} <br />
+                <strong className="text-secondary">Time:</strong> {booking.time} <br />
+                <strong className="text-secondary">Distance:</strong> {booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"} <br />
+                <strong className="text-secondary">Total Fee:</strong>{" "}
+                <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                <strong className="text-secondary">Payment Status:</strong> <span className="text-danger fw-bold">Unpaid</span>
+              </Card.Text>
+            </Col>
+
+            {/* Pay Button */}
+            <Col md={3} className="text-center d-flex flex-column gap-2">
+            <Button
+  variant="success"
+  className="fw-bold px-4 py-2"
+  onClick={() => handleShowModal(booking)}
+  disabled={booking.travelDistance === 0} // Disable if distance is 0
+>
+  Pay Now
+</Button>
+
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+    ))
+  ) : (
+    <p className="text-center text-muted">No unpaid bookings found.</p>
+  )}
+</Container>
+
 
       {/* Payment Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>

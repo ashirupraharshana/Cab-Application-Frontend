@@ -108,9 +108,23 @@ function ViewMyBookings() {
                 <p className="card-text"><strong>Location:</strong> {booking.location}</p>
                 <p className="card-text">
                   <strong>Status:</strong> 
-                  <span className={`fw-bold ${booking.bookstatus === 0 ? "text-warning" : "text-success"}`}>
-                    {booking.bookstatus === 0 ? "Pending" : "Confirmed"}
-                  </span>
+                  <span
+  className="fw-bold"
+  style={{
+    color:
+      booking.bookstatus === 1
+        ? "blue"
+        : booking.bookstatus === 2
+        ? "red"
+        : "orange",
+  }}
+>
+  {booking.bookstatus === 1
+    ? "In Progress"
+    : booking.bookstatus === 2
+    ? "Cancelled"
+    : "Pending"}
+</span>
                 </p>
                 <p className="card-text"><strong>Fee:</strong> ${booking.totalfee.toFixed(2)}</p>
                 <p className="card-text">

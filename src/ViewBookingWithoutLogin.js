@@ -235,12 +235,18 @@ const handlePaymentSubmit = async (e) => {
                    <strong>Total Fee:</strong> <span className="text-primary fw-bold">${booking.totalfee}</span>
                  </Card.Text>
                  <div className="mt-auto text-center">
-                   {booking.paymentstatus === 0 && (
-                     <Button variant="success" onClick={() => handleShowModal(booking)} className="w-100">
-                       Pay Now
-                     </Button>
-                   )}
-                 </div>
+  {booking.paymentstatus === 0 && booking.bookstatus !== 2 && (
+    <Button variant="success" onClick={() => handleShowModal(booking)} className="w-100">
+      Pay Now
+    </Button>
+  )}
+  {booking.bookstatus === 2 && (
+    <Button variant="secondary" disabled className="w-100">
+      Payment Disabled (Cancelled)
+    </Button>
+  )}
+</div>
+
                </Card.Body>
              </Card>
            </Col>

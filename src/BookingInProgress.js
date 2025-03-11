@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav, Container, ListGroup, Card, Button, Modal, Form } from "react-bootstrap";
+import { Navbar, Nav, Container, ListGroup, Card, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function DriverDash() {
@@ -140,61 +140,80 @@ function DriverDash() {
         <h4 className="text-center mb-4">Your Driver ID: {userId || "Not Available"}</h4>
 
         {filteredBookings.length > 0 ? (
-          <ListGroup>
-            {filteredBookings.map((booking) => (
-              <ListGroup.Item key={booking.id} className="mb-3">
-             <Card className="d-flex flex-row align-items-center">
-  {/* Car Photo (Left Side) */}
-  {cars[booking.carid] && cars[booking.carid].photo ? (
-    <div className="flex-shrink-0">
-      <img
-        src={
-          cars[booking.carid].photo.startsWith("http") || cars[booking.carid].photo.startsWith("data:image")
-            ? cars[booking.carid].photo
-            : `data:image/jpeg;base64,${cars[booking.carid].photo}`
-        }
-        alt={cars[booking.carid].model}
-        className="img-fluid rounded-start"
-        style={{ width: "150px", height: "150px", objectFit: "cover" }}
-      />
-    </div>
+    filteredBookings.map((booking) => (
+      <Card key={booking.id} className="mb-4 shadow-lg border-0" style={{ background: "#f8f9fa" }}>
+        <Card.Body className="p-4">
+          <Row className="align-items-center">
+            {/* Car Photo */}
+            <Col md={4} className="text-center">
+              {cars[booking.carid]?.photo ? (
+                <img
+                  src={cars[booking.carid].photo.startsWith("data:image") ? cars[booking.carid].photo : `data:image/jpeg;base64,${cars[booking.carid].photo}`}
+                  alt={`Car ${cars[booking.carid]?.model}`}
+                  className="img-fluid rounded shadow-sm"
+                  style={{ maxWidth: "100%", height: "180px", objectFit: "cover" }}
+                />
+              ) : (
+                <p className="text-muted">No photo available</p>
+              )}
+            </Col>
+
+            {/* Booking Details */}
+            <Col md={5}>
+              <Card.Title className="text-primary fw-bold mb-3">Booking ID: {booking.id}</Card.Title>
+              <Card.Text>
+                <strong className="text-secondary">User ID:</strong> {booking.userid} <br />
+                <strong className="text-secondary">Car Name:</strong> {cars[booking.carid]?.model || "N/A"} <br />
+                <strong className="text-secondary">Location:</strong> {booking.location} <br />
+                <strong className="text-secondary">Time:</strong> {booking.time} <br />
+                <strong className="text-secondary">Status:</strong>{" "}
+<span
+  className="fw-bold"
+  style={{
+    color:
+      booking.bookstatus === 1
+        ? "blue"
+        : booking.bookstatus === 2
+        ? "red"
+        : "orange",
+  }}
+>
+  {booking.bookstatus === 1
+    ? "In Progress"
+    : booking.bookstatus === 2
+    ? "Cancelled"
+    : "Pending"}
+</span>
+
+                <br />
+                <strong className="text-secondary">Total Fee:</strong>{" "}
+                <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                <strong className="text-secondary">Payment Status:</strong>{" "}
+                <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
+                  {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
+                </span>
+              </Card.Text>
+            </Col>
+
+            {/* Buttons */}
+            <Col md={3} className="text-center d-flex flex-column gap-2">
+            <Button
+  variant="success"
+  className="fw-bold px-4 py-2"
+  onClick={() => handleShowModal(booking)}
+  disabled={booking.bookstatus === 2} // Disable when booking is cancelled
+>
+  Pay Online
+</Button>
+
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+    ))
   ) : (
-    <div
-      className="d-flex align-items-center justify-content-center bg-light"
-      style={{ width: "150px", height: "150px", color: "#888" }}
-    >
-      No Image Available
-    </div>
+    <p className="text-center mt-4 text-muted">No confirmed bookings assigned to you.</p>
   )}
-
-  {/* Booking Details (Right Side) */}
-  <Card.Body>
-    <Card.Title>Booking ID: {booking.id}</Card.Title>
-    <Card.Subtitle className="mb-2 text-muted">User ID: {booking.userid}</Card.Subtitle>
-    <Card.Text>
-      <strong>Car ID:</strong> {booking.carid} <br />
-      <strong>Location:</strong> {booking.location} <br />
-      <strong>Time:</strong> {booking.time} <br />
-      <strong>Distance:</strong> {booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"} <br />
-      <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-      <strong>Payment Status:</strong> <span className="text-danger">Unpaid</span>
-    </Card.Text>
-
-    {/* Pay Online Button - Positioned at bottom right */}
-    <div className="d-flex justify-content-end">
-      <Button variant="success" onClick={() => handleShowModal(booking)}>
-        Pay Online
-      </Button>
-    </div>
-  </Card.Body>
-</Card>
-
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        ) : (
-          <p className="text-center mt-4">No confirmed bookings assigned to you.</p>
-        )}
       </Container>
 
       {/* Payment Modal */}
