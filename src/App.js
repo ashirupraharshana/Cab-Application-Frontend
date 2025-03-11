@@ -23,6 +23,7 @@ import UserViewNotPaidBookings from "./UserViewNotPaidBookings";
 import Earnings from "./Earnings";
 import DriverEarning from "./DriverEarning";
 import ViewEarningFromEachDriver from "./ViewEarningFromEachDriver";
+import AboutUs from "./AboutUs";
 
 
 
@@ -177,6 +178,8 @@ export default function App() {
         <Route path="/Earnings" element={<Earnings />} />
         <Route path="/DriverEarning" element={<DriverEarning />} />
         <Route path="/ViewEarningFromEachDriver" element={<ViewEarningFromEachDriver />} />
+        <Route path="/AboutUs" element={<AboutUs />} />
+        
       </Routes>
     </Router>
   );

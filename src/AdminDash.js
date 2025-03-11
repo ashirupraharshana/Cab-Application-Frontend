@@ -133,11 +133,9 @@ function AdminDash() {
 
 
       <Container>
-        <h1 className="mb-4">Admin Dashboard</h1>
-        
         {/* Manage Cars Section */}
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2>Car Gallery</h2>
+          <h2>Manage Cars</h2>
           <Button variant="primary" onClick={() => setShowModal(true)}>+ Add Car</Button>
         </div>
 
