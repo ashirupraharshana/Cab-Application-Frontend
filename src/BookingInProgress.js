@@ -128,6 +128,7 @@ function DriverDash() {
         <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
         
         <Nav.Link as={Link} to="/UserViewNotPaidBookings">Not Paid Bookings</Nav.Link>
+        <Nav.Link as={Link} to="/AboutUs">About us</Nav.Link>
         <Nav.Link as={Link} to="/">Logout</Nav.Link>
       </Nav>
     </Navbar.Collapse>

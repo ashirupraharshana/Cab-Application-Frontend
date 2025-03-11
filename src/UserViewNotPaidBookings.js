@@ -116,6 +116,7 @@ function UserViewNotPaidBookings() {
               <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
               <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
               <Nav.Link as={Link} to="/UserViewNotPaidBookings">No Paid Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/AboutUs">About us</Nav.Link>
               <Nav.Link as={Link} to="/">Logout</Nav.Link>
             </Nav>
           </Navbar.Collapse>

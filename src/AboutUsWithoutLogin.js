@@ -15,12 +15,11 @@ function AboutUs() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
-              <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
-              <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
-              <Nav.Link as={Link} to="/UserViewNotPaidBookings">No Paid Bookings</Nav.Link>
-              <Nav.Link as={Link} to="/AboutUs">About Us</Nav.Link>
-              <Nav.Link as={Link} to="/">Logout</Nav.Link>
+  <Nav.Link as={Link} to="/BookACarImmediately">Book a Car</Nav.Link>
+              <Nav.Link as={Link} to="/ViewBookingWithoutLogin">View Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/ViewBookingAllWithoutLogin">Pay for Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/AboutUsWithoutLogin">AboutUs</Nav.Link>
+              <Nav.Link as={Link} to="/">Login</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>

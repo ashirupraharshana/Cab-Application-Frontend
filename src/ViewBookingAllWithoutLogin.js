@@ -64,6 +64,7 @@ const ViewBookingWithoutLogin = () => {
               <Nav.Link as={Link} to="/BookACarImmediately">Book a Car</Nav.Link>
               <Nav.Link as={Link} to="/ViewBookingWithoutLogin">View Bookings</Nav.Link>
               <Nav.Link as={Link} to="/ViewBookingAllWithoutLogin">Pay for Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/AboutUsWithoutLogin">AboutUs</Nav.Link>
               <Nav.Link as={Link} to="/">Login</Nav.Link>
             </Nav>
           </Navbar.Collapse>
