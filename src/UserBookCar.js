@@ -92,6 +92,14 @@ function UserBookCar() {
     }
   };
   
+    const [searchQuery, setSearchQuery] = useState("");
+  
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+  const filteredCars = cars.filter((car) =>
+    car.model.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
 
   return (
@@ -120,9 +128,20 @@ function UserBookCar() {
     <Container>
       {/* Display Logged-in User ID */}
       <h5 className="text-center text-primary" style={{ display: "none" }}>Logged in as User ID: {userId}</h5>
-
+      
+        {/* Search Bar */}
+        <Row className="mb-3">
+          <Col md={{ span: 6, offset: 3 }}>
+            <Form.Control
+              type="text"
+              placeholder="Search by car model..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </Col>
+        </Row>
       <Row>
-        {cars.map((car) => (
+      {filteredCars.map((car) => (
           <Col key={car.id} md={4} className="mb-4">
             <Card>
               <Card.Img

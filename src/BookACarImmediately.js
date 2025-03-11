@@ -89,6 +89,7 @@ function UserBookCar() {
       alert("Booking failed. Try again.");
     }
   };
+  
   const [searchQuery, setSearchQuery] = useState("");
 
 const handleSearchChange = (e) => {
