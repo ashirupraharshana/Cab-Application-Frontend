@@ -115,16 +115,21 @@ function ViewMyBookings() {
       booking.bookstatus === 1
         ? "blue"
         : booking.bookstatus === 2
+        ? "green"
+        : booking.bookstatus === 3
         ? "red"
         : "orange",
   }}
 >
-  {booking.bookstatus === 1
+  {booking.bookstatus === 0
+    ? "Pending"
+    : booking.bookstatus === 1
     ? "In Progress"
     : booking.bookstatus === 2
-    ? "Cancelled"
-    : "Pending"}
+    ? "Complete"
+    : "Cancelled"}
 </span>
+
                 </p>
                 <p className="card-text"><strong>Fee:</strong> ${booking.totalfee.toFixed(2)}</p>
                 <p className="card-text">

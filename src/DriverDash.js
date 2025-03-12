@@ -43,7 +43,7 @@ function DriverDash() {
 
   const handleCancel = async (bookingId) => {
     try {
-      const response = await fetch(`http://localhost:8080/bookings/update/${bookingId}/status2`, {
+      const response = await fetch(`http://localhost:8080/bookings/update/${bookingId}/status3`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });

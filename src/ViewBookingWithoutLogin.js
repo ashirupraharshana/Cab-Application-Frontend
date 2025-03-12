@@ -19,40 +19,44 @@ const [paymentDetails, setPaymentDetails] = useState({
   amount: 0
 });
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setError("");
-    setBookings([]); // Clear previous results
-    setLoading(true); // Set loading to true when the request starts
+ const handleSearch = async (e) => {
+  e.preventDefault();
+  setError("");
+  setBookings([]); // Clear previous results
+  setLoading(true); // Set loading to true when the request starts
 
-    if (!idNumber) {
-      setError("Please enter an ID number.");
-      setLoading(false);
-      return;
+  if (!idNumber) {
+    setError("Please enter an ID number.");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8080/bookings/idNumber/${idNumber}`);
+    if (!response.ok) throw new Error("No bookings found for this ID Number");
+
+    const data = await response.json();
+
+    // Filter only "In Progress" and "Unpaid" bookings
+    const unpaidBookings = data.filter(
+      (booking) => booking.bookstatus === 1 && booking.paymentstatus === 0
+    );
+    
+    setBookings(unpaidBookings);
+
+    if (unpaidBookings.length === 0) {
+      setError("No unpaid bookings found for this ID Number.");
+    } else {
+      fetchDrivers(unpaidBookings);
+      fetchCars(unpaidBookings);
     }
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false); // Reset loading state
+  }
+};
 
-    try {
-      const response = await fetch(`http://localhost:8080/bookings/idNumber/${idNumber}`);
-      if (!response.ok) throw new Error("No bookings found for this ID Number");
-
-      const data = await response.json();
-
-      // Filter only unpaid bookings
-      const unpaidBookings = data.filter((booking) => booking.paymentstatus === 0);
-      setBookings(unpaidBookings);
-
-      if (unpaidBookings.length === 0) {
-        setError("No unpaid bookings found for this ID Number.");
-      } else {
-        fetchDrivers(unpaidBookings);
-        fetchCars(unpaidBookings);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false); // Reset loading state
-    }
-  };
 
   // Fetch driver details using driverid
   const fetchDrivers = async (bookings) => {

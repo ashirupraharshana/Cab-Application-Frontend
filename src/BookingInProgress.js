@@ -89,22 +89,23 @@ function DriverDash() {
 
   useEffect(() => {
     const fetchCarDetails = async () => {
+      const carIds = [...new Set(bookings.map((b) => b.carid))]; // Unique car IDs
       const carData = {};
+  
       await Promise.all(
-        bookings.map(async (booking) => {
-          if (!carData[booking.carid]) {
-            try {
-              const response = await fetch(`http://localhost:8080/cars/${booking.carid}`);
-              if (response.ok) {
-                const carInfo = await response.json();
-                carData[booking.carid] = carInfo;
-              }
-            } catch (error) {
-              console.error(`Error fetching car details for car ID ${booking.carid}:`, error);
+        carIds.map(async (carid) => {
+          try {
+            const response = await fetch(`http://localhost:8080/cars/${carid}`);
+            if (response.ok) {
+              const carInfo = await response.json();
+              carData[carid] = carInfo;
             }
+          } catch (error) {
+            console.error(`Error fetching car details for Car ID ${carid}:`, error);
           }
         })
       );
+  
       setCars(carData);
     };
   
@@ -112,6 +113,7 @@ function DriverDash() {
       fetchCarDetails();
     }
   }, [bookings]);
+  
   
   
   return (
@@ -167,23 +169,22 @@ function DriverDash() {
                 <strong className="text-secondary">Location:</strong> {booking.location} <br />
                 <strong className="text-secondary">Time:</strong> {booking.time} <br />
                 <strong className="text-secondary">Status:</strong>{" "}
-<span
+                <span
   className="fw-bold"
   style={{
     color:
       booking.bookstatus === 1
         ? "blue"
         : booking.bookstatus === 2
+        ? "green"
+        : booking.bookstatus === 3
         ? "red"
         : "orange",
   }}
 >
-  {booking.bookstatus === 1
-    ? "In Progress"
-    : booking.bookstatus === 2
-    ? "Cancelled"
-    : "Pending"}
+  {["Pending", "In Progress", "Complete", "Cancelled"][booking.bookstatus] || "Unknown"}
 </span>
+
 
                 <br />
                 <strong className="text-secondary">Total Fee:</strong>{" "}
@@ -201,10 +202,11 @@ function DriverDash() {
   variant="success"
   className="fw-bold px-4 py-2"
   onClick={() => handleShowModal(booking)}
-  disabled={booking.bookstatus === 0 || booking.bookstatus === 2} // Disable when status is 0 (Cancelled) or 2
+  disabled={booking.bookstatus !== 2} // Only enabled when bookstatus is 2 (Complete)
 >
   Pay Online
 </Button>
+
 
 
             </Col>

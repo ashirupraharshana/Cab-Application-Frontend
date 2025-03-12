@@ -115,8 +115,11 @@ const ViewBookingWithoutLogin = () => {
   ? "Pending"
   : booking.bookstatus === 1
   ? "In Progress"
+  : booking.bookstatus === 2
+  ? "Complete"
   : "Cancelled"}
-                      </span> <br />
+</span>
+ <br />
                       <strong>Payment:</strong> 
                       <span className={`badge ${booking.paymentstatus === 0 ? "bg-danger" : "bg-success"}`}>
                         {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
