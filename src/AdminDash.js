@@ -157,7 +157,16 @@ function AdminDash() {
                     <strong>Seats:</strong> {car.seats} <br />
                     <strong>Capacity:</strong> {car.capacity} <br />
                     <strong>Price per KM:</strong> ${car.pricePerKm} <br />
-                    <strong>Status:</strong> {car.status === "0" ? "Available" : "Not Available"}
+                    <strong>Status:</strong>{" "}
+<span
+  style={{
+    color: car.status === 0 ? "blue" : "red",
+    fontWeight: "bold",
+  }}
+>
+  {car.status === 0 ? "Available" : "In Use"}
+</span>
+
                     <div className="d-flex justify-content-between">
                     <Button
   variant="danger"
