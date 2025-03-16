@@ -97,25 +97,46 @@ function AdminViewBookings() {
       alert("Failed to assign driver.");
     }
   };
-
-  // Delete a booking
-  const handleDeleteBooking = async (bookingId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this booking?");
-    if (!confirmDelete) return;
-
+  const updateCarStatus = async (carId) => {
     try {
-      const response = await fetch(`http://localhost:8080/bookings/delete/${bookingId}`, {
-        method: "DELETE",
+      const response = await fetch(`http://localhost:8080/cars/updateStatusToAvailable/${carId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) throw new Error("Failed to update car status");
+  
+      alert("Car status updated successfully!");
+  
+      // Optional: Refresh state or reload page if needed
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating car status:", error);
+      alert("Failed to update car status. Try again.");
+    }
+  };
+  const handleCancel = async (bookingId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/bookings/update/${bookingId}/status3`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
       });
 
-      if (!response.ok) throw new Error("Failed to delete booking");
+      if (!response.ok) throw new Error("Failed to update booking status");
 
-      alert("Booking deleted successfully!");
-      setBookings(bookings.filter((booking) => booking.id !== bookingId));
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, bookstatus: 2 } : booking
+        )
+      );
+
+      alert(`Booking ${bookingId} has been cancelled.`);
+      window.location.reload();
     } catch (error) {
-      console.error("Error deleting booking:", error);
-      alert("Failed to delete booking.");
+      console.error("Error updating booking status:", error);
+      alert("Failed to cancel booking. Try again.");
     }
+    
   };
 
   return (
@@ -142,7 +163,7 @@ function AdminViewBookings() {
     </Navbar>
 
     <Container className="mt-4">
-    <h2 className="text-center mb-4">Admin - Unassigned Bookings</h2>
+    <h2 className="text-center mb-4">Driver Unassigned Bookings</h2>
   
     {bookings.length > 0 ? (
       <div className="row">
@@ -192,9 +213,19 @@ function AdminViewBookings() {
                     </Dropdown.Menu>
                   </Dropdown>
   
-                  <Button variant="danger" size="sm" onClick={() => handleDeleteBooking(booking.id)}>
-                    Delete Booking
-                  </Button>
+                  <button
+  onClick={() => {
+    const action = window.confirm("Click OK to Cancel Booking");
+    if (action) {
+      handleCancel(booking.id);
+      updateCarStatus(booking.carid);
+    }
+  }}
+  className="btn btn-danger w-100"
+  disabled={booking.bookstatus === 1 || booking.bookstatus === 2 || booking.bookstatus === 3} // Disable if bookstatus is 1, 2, or 3
+>
+  Cancel Booking
+</button>
                 </Card.Body>
               </Card>
             </div>
