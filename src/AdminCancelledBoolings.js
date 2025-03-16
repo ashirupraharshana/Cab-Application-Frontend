@@ -15,7 +15,7 @@ function AdminViewBookings() {
         if (!response.ok) throw new Error("Failed to fetch bookings");
 
         const data = await response.json();
-        const filteredBookings = data.filter((booking) => booking.bookstatus === 2);
+        const filteredBookings = data.filter((booking) => booking.bookstatus === 3);
         setBookings(filteredBookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
