@@ -157,7 +157,7 @@ function UserViewNotPaidBookings() {
                 <strong className="text-secondary">Time:</strong> {booking.time} <br />
                 <strong className="text-secondary">Distance:</strong> {booking.travelDistance > 0 ? `${booking.travelDistance} km` : "Not Complete"} <br />
                 <strong className="text-secondary">Total Fee:</strong>{" "}
-                <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                <span className="fw-bold">RS.{booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
                 <strong className="text-secondary">Payment Status:</strong> <span className="text-danger fw-bold">Unpaid</span>
               </Card.Text>
             </Col>
