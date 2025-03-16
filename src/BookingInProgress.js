@@ -188,7 +188,7 @@ function DriverDash() {
 
                 <br />
                 <strong className="text-secondary">Total Fee:</strong>{" "}
-                <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                <span className="fw-bold">Rs.{booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
                 <strong className="text-secondary">Payment Status:</strong>{" "}
                 <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
                   {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
