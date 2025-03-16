@@ -105,7 +105,6 @@ function AdminManageDrivers() {
         <h1 className="mb-4">Manage Drivers</h1>
 
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2>Driver List</h2>
           <Button variant="primary" onClick={() => setShowModal(true)}>+ Add Driver</Button>
         </div>
 
