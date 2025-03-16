@@ -256,28 +256,29 @@ const handlePayManually = (bookingId) => {
                 <strong className="text-secondary">Location:</strong> {booking.location} <br />
                 <strong className="text-secondary">Time:</strong> {booking.time} <br />
                 <strong className="text-secondary">Status:</strong> <span className="text-success fw-bold">Confirmed</span> <br />
-                <strong className="text-secondary">Total Fee:</strong> <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                <strong className="text-secondary">Total Fee:</strong> <span className="fw-bold">Rs.{booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
                 <strong className="text-secondary">Payment Status:</strong>{" "}
                 <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
                   {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
                 </span>
               </Card.Text>
             </Col>
+{/* Buttons */}
+<Col md={3} className="text-center d-flex flex-column gap-2">
+  <Button variant="success" className="fw-bold px-4 py-2" onClick={() => handleArrivedClick(booking)}>
+    Arrived
+  </Button>
+  <Button 
+    variant="warning" 
+    className="fw-bold px-4 py-2" 
+    onClick={() => handlePayManually(booking.id)}
+    disabled={booking.bookstatus !== 2 || booking.paymentstatus === 1} // Button is disabled if bookstatus is not 2 (Complete) or if paymentstatus is 1 (Paid)
+  >
+    Paid Manually
+  </Button>
+</Col>
 
-            {/* Buttons */}
-            <Col md={3} className="text-center d-flex flex-column gap-2">
-              <Button variant="success" className="fw-bold px-4 py-2" onClick={() => handleArrivedClick(booking)}>
-                Arrived
-              </Button>
-              <Button 
-                variant="warning" 
-                className="fw-bold px-4 py-2" 
-                onClick={() => handlePayManually(booking.id)}
-                disabled={booking.paymentstatus === 1}
-              >
-                Paid Manually
-              </Button>
-            </Col>
+
           </Row>
         </Card.Body>
       </Card>
