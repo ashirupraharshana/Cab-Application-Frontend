@@ -91,6 +91,27 @@ function DriverDash() {
     (booking) => String(booking.driverid) === driverId && booking.bookstatus !== 2
   );
 
+  const updateCarStatus = async (carId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/cars/updateStatusToAvailable/${carId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) throw new Error("Failed to update car status");
+  
+      alert("Car status updated successfully!");
+  
+      // Optional: Refresh state or reload page if needed
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating car status:", error);
+      alert("Failed to update car status. Try again.");
+    }
+  };
+  
+  
+
   return (
     <>
       <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
@@ -139,31 +160,53 @@ function DriverDash() {
                       <strong className="text-secondary">Location:</strong> {booking.location} <br />
                       <strong className="text-secondary">Time:</strong> {booking.time} <br />
                       <strong className="text-secondary">Status:</strong>{" "}
-                      <span className="fw-bold" style={{ color: booking.bookstatus === 1 ? "blue" : "orange" }}>
-                        {booking.bookstatus === 1 ? "In Progress" : "Pending"}
-                      </span>
+                      <span className="fw-bold" style={{ color: booking.bookstatus === 0 ? "orange" 
+                      : booking.bookstatus === 1 ? "blue" 
+                      : booking.bookstatus === 2 ? "green" 
+                      : "red" }}>
+  {booking.bookstatus === 0 ? "Pending" 
+  : booking.bookstatus === 1 ? "In Progress" 
+  : booking.bookstatus === 2 ? "Complete" 
+  : "Cancelled"}
+</span>
+
                       <br />
                       <strong className="text-secondary">Total Fee:</strong>{" "}
-                      <span className="fw-bold">${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
+                      <span className="fw-bold">Rs.{booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"}</span> <br />
                       <strong className="text-secondary">Payment Status:</strong>{" "}
                       <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
                         {booking.paymentstatus === 0 ? "Payment Pending" : "Paid"}
                       </span>
                     </Card.Text>
                   </Col>
+                  
 
                   {/* Buttons */}
                   <Col md={3} className="text-center d-flex flex-column gap-2">
-                    <Button variant="success" className="fw-bold px-4 py-2" onClick={() => handleConfirm(booking.id)}>
-                      Confirm
-                    </Button>
-                    <Button
-                      variant="danger"
-                      className="fw-bold px-4 py-2"
-                      onClick={() => handleCancel(booking.id)}
-                    >
-                      Cancel
-                    </Button>
+                  <Button
+  variant="success"
+  className="fw-bold px-4 py-2"
+  onClick={() => handleConfirm(booking.id)}
+  disabled={booking.bookstatus !== 0} // Disable if bookstatus is not 0
+>
+  Confirm
+</Button>
+
+<Button
+  variant="danger"
+  className="fw-bold px-4 py-2"
+  onClick={() => {
+    const action = window.confirm("Click OK to Cancel Booking");
+    if (action) {
+      handleCancel(booking.id);
+      updateCarStatus(booking.carid);
+    }
+  }}
+  disabled={booking.bookstatus !== 0} // Disable if bookstatus is not 0
+>
+  Cancel
+</Button>
+
                   </Col>
                 </Row>
               </Card.Body>
