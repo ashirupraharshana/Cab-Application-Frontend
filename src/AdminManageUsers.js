@@ -61,7 +61,7 @@ const AdminManageUsers = () => {
          </Navbar>
 
       <Container>
-        <h1 className="mb-4">Manage Drivers</h1>
+        <h1 className="mb-4">Manage Users</h1>
 
         {error && <Alert variant="danger">{error}</Alert>}
 
