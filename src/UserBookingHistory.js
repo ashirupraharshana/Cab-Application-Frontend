@@ -1,113 +1,240 @@
 import React, { useEffect, useState } from "react";
-import { Card, ListGroup, Container, Row, Col } from "react-bootstrap";
-import { Navbar, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { Navbar, Nav, } from "react-bootstrap";
 
-function UserBookingHistory() {
-  // Retrieve logged-in user ID from localStorage
-  const userId = localStorage.getItem("userId");
-  const [bookings, setBookings] = useState([]);
-  const [carImages, setCarImages] = useState({}); // Store car images
 
-  // Fetch bookings for logged-in user
+import { Card, Button, Container, Row, Col, Modal, Form } from "react-bootstrap";
+
+function UserBookCar() {
+  const [cars, setCars] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCarId, setSelectedCarId] = useState(null);
+  const [bookingData, setBookingData] = useState({
+    location: "",
+    time: "",
+  });
+
+  // Retrieve userId from localStorage
+  const [userId, setUserId] = useState("");
+
   useEffect(() => {
-    fetch("http://localhost:8080/bookings/all")
-      .then((response) => response.json())
-      .then((data) => {
-        // Filter bookings for the logged-in user
-        const userBookings = data.filter((booking) => String(booking.userid) === userId);
-        setBookings(userBookings);
+    const storedUserId = localStorage.getItem("userId");
+    setUserId(storedUserId || "N/A"); // Fallback if not found
+  }, []);
 
-        // Fetch car images for each booking
-        userBookings.forEach((booking) => fetchCarImage(booking.carid));
-      })
-      .catch((error) => console.error("Error fetching bookings:", error));
-  }, [userId]);
+  // Fetch car details
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/cars/all");
+        const data = await response.json();
+        
+        // Filter only cars with status = 0
+        const availableCars = data.filter(car => car.status === 0);
+        
+        setCars(availableCars);
+      } catch (error) {
+        console.error("Error fetching car details:", error);
+      }
+    };
+  
+    fetchCars();
+  }, []);
+  
 
-  // Fetch car image by car ID
-  const fetchCarImage = (carId) => {
-    fetch(`http://localhost:8080/cars/${carId}`)
-      .then((response) => response.json())
-      .then((carData) => {
-        setCarImages((prevImages) => ({
-          ...prevImages,
-          [carId]: carData.photo.startsWith("data:image")
-            ? carData.photo
-            : `data:image/jpeg;base64,${carData.photo}`,
-        }));
-      })
-      .catch((error) => console.error("Error fetching car image:", error));
+  // Open modal with selected car ID
+  const handleBookNow = (carId) => {
+    setSelectedCarId(carId);
+    setShowModal(true);
   };
 
+  // Handle input change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBookingData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const bookingRequest = {
+      userid: userId, // Include userId in booking request
+      carid: selectedCarId,
+      location: bookingData.location,
+      time: bookingData.time,
+      bookstatus: 0,
+      paymentstatus: 0,
+      totalfee: 0,
+    };
+  
+    try {
+      // Step 1: Create the booking
+      const bookingResponse = await fetch("http://localhost:8080/bookings/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingRequest),
+      });
+  
+      if (!bookingResponse.ok) throw new Error("Booking failed");
+  
+      // Step 2: Update the car status to 1 (in use)
+      const statusUpdateResponse = await fetch(`http://localhost:8080/cars/updateStatus/${selectedCarId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!statusUpdateResponse.ok) throw new Error("Failed to update car status");
+  
+      alert("Booking successful! Car status updated.");
+      setShowModal(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Booking failed. Try again.");
+    }
+  };
+  
+    const [searchQuery, setSearchQuery] = useState("");
+  
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+  const filteredCars = cars.filter((car) =>
+    car.model.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+
   return (
-    <>
-    {/* Navbar */}
-    <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-      <Container>
-        <Navbar.Brand as={Link} to="/">User Dashboard</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
-            <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
-            <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
-            <Nav.Link as={Link} to="/UserBookingHistory">Booking History</Nav.Link>
-            <Nav.Link as={Link} to="/UserViewNotPaidBookings">Not Paid Bookings</Nav.Link>
-            <Nav.Link as={Link} to="/">Logout</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-      <span className="text-light me-3 d-none">Logged in as: <strong>(ID: {userId})</strong></span>
-    </Navbar>
+ <>
+{/* Navbar */}
+<Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+  <Container>
+    <Navbar.Brand as={Link} to="/">Mega City Cab</Navbar.Brand>
+    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+    <Navbar.Collapse id="basic-navbar-nav">
+      <Nav className="ms-auto">
+        <Nav.Link as={Link} to="/UserBookCar">Book A Car</Nav.Link>
+        <Nav.Link as={Link} to="/ViewMyBookings">View Bookings</Nav.Link>
+        <Nav.Link as={Link} to="/BookingInProgress">Bookings in Progress</Nav.Link>
+        
+        <Nav.Link as={Link} to="/UserViewNotPaidBookings">Not Paid Bookings</Nav.Link>
+        <Nav.Link as={Link} to="/AboutUs">About us</Nav.Link>
+        <Nav.Link as={Link} to="/">Logout</Nav.Link>
+      </Nav>
+    </Navbar.Collapse>
+  </Container>
+  <span className="text-light me-3 d-none">Logged in as: <strong>(ID: {userId})</strong></span>
+</Navbar>
+
     
     <Container>
-      <h2 className="text-center my-4">User Booking History</h2>
-      <p className="text-center">Logged-in User ID: <strong>{userId || "Not Available"}</strong></p>
-
-      {bookings.length > 0 ? (
-        <Row>
-          {bookings.map((booking) => (
-            <Col key={booking.id} md={4} className="mb-4">
-              <Card>
-                {/* Car Image */}
-                {carImages[booking.carid] && (
-                  <Card.Img
-                    variant="top"
-                    src={carImages[booking.carid]}
-                    alt={`Car ${booking.carid}`}
-                    style={{ height: "200px", objectFit: "cover" }}
-                  />
-                )}
-
-                <Card.Body>
-                  <Card.Title>Booking ID: {booking.id}</Card.Title>
-                  <Card.Text>
-                    <strong>Car ID:</strong> {booking.carid} <br />
-                    <strong>Driver:</strong> {booking.driverid ? `ID: ${booking.driverid}` : "Not Assigned"} <br />
-                    <strong>Location:</strong> {booking.location} <br />
-                    <strong>Time:</strong> {booking.time} <br />
-                    <strong>Status:</strong>{" "}
-                    <span className={booking.bookstatus === 0 ? "text-warning" : "text-success"}>
-                      {booking.bookstatus === 0 ? "Pending" : "Confirmed"}
-                    </span>
-                    <br />
-                    <strong>Total Fee:</strong> ${booking.totalfee ? booking.totalfee.toFixed(2) : "N/A"} <br />
-                    <strong>Payment Status:</strong>{" "}
-                    <span className={booking.paymentstatus === 0 ? "text-danger" : "text-success"}>
-                      {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
-                    </span>
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+      {/* Display Logged-in User ID */}
+      <h5 className="text-center text-primary" style={{ display: "none" }}>Logged in as User ID: {userId}</h5>
+      
+        {/* Search Bar */}
+        <Row className="mb-3">
+          <Col md={{ span: 6, offset: 3 }}>
+            <Form.Control
+              type="text"
+              placeholder="Search by car model..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </Col>
         </Row>
-      ) : (
-        <p className="text-center mt-4">No bookings found for your account.</p>
-      )}
+      <Row>
+      {filteredCars.map((car) => (
+          <Col key={car.id} md={4} className="mb-4">
+            <Card>
+              <Card.Img
+                variant="top"
+                src={car.photo.startsWith("data:image") ? car.photo : `data:image/jpeg;base64,${car.photo}`}
+                alt={car.model}
+                style={{ height: "200px", objectFit: "cover" }}
+              />
+              <Card.Body>
+                <Card.Title>{car.model}</Card.Title>
+                <Card.Text className="p-3 bg-light rounded shadow-sm">
+  <div className="d-flex align-items-center">
+    <strong className="me-2 text-primary">
+      <i className="fas fa-car"></i> License Plate:
+    </strong>
+    <span className="fw-bold text-dark">{car.licensePlate}</span>
+  </div>
+
+  <div className="d-flex align-items-center mt-2">
+    <strong className="me-2 text-success">
+      <i className="fas fa-user-friends"></i> Seats:
+    </strong>
+    <span className="fw-bold text-dark">{car.seats}</span>
+  </div>
+
+  <div className="d-flex align-items-center mt-2">
+    <strong className="me-2 text-info">
+      <i className="fas fa-tachometer-alt"></i> Capacity:
+    </strong>
+    <span className="fw-bold text-dark">{car.capacity} CC</span>
+  </div>
+
+  <div className="d-flex align-items-center mt-2">
+    <strong className="me-2 text-danger">
+      <i className="fas fa-dollar-sign"></i> Price per Km:
+    </strong>
+    <span className="fw-bold text-dark">Rs.{car.pricePerKm}</span>
+  </div>
+</Card.Text>
+
+                <Button variant="primary" onClick={() => handleBookNow(car.id)}>
+                  Book Now
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Booking Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Book Car</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>User ID</Form.Label>
+              <Form.Control type="text" value={userId} disabled />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Pickup Location</Form.Label>
+              <Form.Control
+                type="text"
+                name="location"
+                value={bookingData.location}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Pickup Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                name="time"
+                value={bookingData.time}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit">
+              Confirm Booking
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </Container>
-    </>
+     </>
   );
 }
 
-export default UserBookingHistory;
+export default UserBookCar;
