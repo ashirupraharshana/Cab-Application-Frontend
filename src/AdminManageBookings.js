@@ -13,16 +13,21 @@ function AdminViewBookings() {
       try {
         const response = await fetch("http://localhost:8080/bookings/all");
         if (!response.ok) throw new Error("Failed to fetch bookings");
-
+  
         const data = await response.json();
-        setBookings(data); // Display all bookings
+  
+        // Filter bookings where bookstatus is 2 (Complete) or 0 (Pending)
+        const filteredBookings = data.filter(booking => booking.bookstatus === 2 || booking.bookstatus === 0);
+  
+        setBookings(filteredBookings); // Update state with filtered data
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
     };
+  
     fetchBookings();
   }, []);
-
+  
   // Fetch car details only for needed car IDs
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -52,20 +57,46 @@ function AdminViewBookings() {
     fetchCarDetails();
   }, [bookings]);
 
-  // Cancel a booking
-  const handleCancelBooking = async (bookingId) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+  const updateCarStatus = async (carId) => {
     try {
-      const response = await fetch(`http://localhost:8080/bookings/delete/${bookingId}`, {
-        method: "DELETE",
+      const response = await fetch(`http://localhost:8080/cars/updateStatusToAvailable/${carId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
       });
-      if (!response.ok) throw new Error("Failed to cancel booking");
-      alert("Booking canceled successfully!");
-      setBookings(bookings.filter((booking) => booking.id !== bookingId));
+  
+      if (!response.ok) throw new Error("Failed to update car status");
+  
+      alert("Car status updated successfully!");
+  
+      // Optional: Refresh state or reload page if needed
+      window.location.reload();
     } catch (error) {
-      console.error("Error canceling booking:", error);
-      alert("Failed to cancel booking.");
+      console.error("Error updating car status:", error);
+      alert("Failed to update car status. Try again.");
     }
+  };
+  const handleCancel = async (bookingId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/bookings/update/${bookingId}/status3`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) throw new Error("Failed to update booking status");
+
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, bookstatus: 2 } : booking
+        )
+      );
+
+      alert(`Booking ${bookingId} has been cancelled.`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      alert("Failed to cancel booking. Try again.");
+    }
+    
   };
 
   return (
@@ -123,9 +154,19 @@ function AdminViewBookings() {
                           {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
                         </span>
                       </Card.Text>
-                      <Button variant="danger" size="sm" onClick={() => handleCancelBooking(booking.id)}>
-                        Cancel Booking
-                      </Button>
+                      <button
+  onClick={() => {
+    const action = window.confirm("Click OK to Cancel Booking");
+    if (action) {
+      handleCancel(booking.id);
+      updateCarStatus(booking.carid);
+    }
+  }}
+  className="btn btn-danger w-100"
+  disabled={booking.bookstatus === 1 || booking.bookstatus === 2 || booking.bookstatus === 3} // Disable if bookstatus is 1, 2, or 3
+>
+  Cancel Booking
+</button>
                     </Card.Body>
                   </Card>
                 </Col>
