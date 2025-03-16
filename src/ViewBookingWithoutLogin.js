@@ -30,31 +30,27 @@ const [paymentDetails, setPaymentDetails] = useState({
     setLoading(false);
     return;
   }
-
   try {
     const response = await fetch(`http://localhost:8080/bookings/idNumber/${idNumber}`);
     if (!response.ok) throw new Error("No bookings found for this ID Number");
 
     const data = await response.json();
 
-    // Filter only "In Progress" and "Unpaid" bookings
-    const unpaidBookings = data.filter(
-      (booking) => booking.bookstatus === 1 && booking.paymentstatus === 0
-    );
-    
-    setBookings(unpaidBookings);
+    // Set all retrieved bookings
+    setBookings(data);
 
-    if (unpaidBookings.length === 0) {
-      setError("No unpaid bookings found for this ID Number.");
+    if (data.length === 0) {
+      setError("No bookings found for this ID Number.");
     } else {
-      fetchDrivers(unpaidBookings);
-      fetchCars(unpaidBookings);
+      fetchDrivers(data);
+      fetchCars(data);
     }
-  } catch (err) {
+} catch (err) {
     setError(err.message);
-  } finally {
+} finally {
     setLoading(false); // Reset loading state
-  }
+}
+
 };
 
 
@@ -218,40 +214,68 @@ const handlePaymentSubmit = async (e) => {
                  alt={cars[booking.carid]?.name || "Car Image"}
                  style={{ height: "220px", objectFit: "cover", borderRadius: "8px 8px 0 0" }}
                />
-               <Card.Body className="d-flex flex-column">
-                 <Card.Title className="fw-bold text-center">{cars[booking.carid]?.name || "Unknown Car"}</Card.Title>
-                 <Card.Text className="text-muted small">
-                   <strong>Driver:</strong> {drivers[booking.driverid] || "Loading..."} <br />
-                   <strong>Location:</strong> {booking.location} <br />
-                   <strong>Time:</strong> {booking.time} <br />
-                   <strong>Status:</strong> 
-                   <span className={`badge ${booking.bookstatus === 0 ? "bg-warning text-dark" : "bg-success"}`}>
-                   {booking.bookstatus === 0
-  ? "Pending"
-  : booking.bookstatus === 1
-  ? "In Progress"
-  : "Cancelled"}
-                   </span> <br />
-                   <strong>Payment:</strong> 
-                   <span className={`badge ${booking.paymentstatus === 0 ? "bg-danger" : "bg-success"}`}>
-                     {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
-                   </span> <br />
-                   <strong>Total Fee:</strong> <span className="text-primary fw-bold">${booking.totalfee}</span>
-                 </Card.Text>
-                 <div className="mt-auto text-center">
-  {booking.paymentstatus === 0 && booking.bookstatus !== 2 && (
-    <Button variant="success" onClick={() => handleShowModal(booking)} className="w-100">
-      Pay Now
-    </Button>
-  )}
-  {booking.bookstatus === 2 && (
-    <Button variant="secondary" disabled className="w-100">
-      Payment Disabled (Cancelled)
-    </Button>
-  )}
+          <Card className="shadow-sm border-0 rounded-3">
+  <Card.Body className="d-flex flex-column p-4">
+    <Card.Title className="fw-bold text-center text-primary mb-3">
+      {cars[booking.carid]?.name || "Unknown Car"}
+    </Card.Title>
+
+    <Card.Text className="small">
+      <div className="mb-2">
+        <strong className="text-dark">Driver:</strong> {drivers[booking.driverid] || "Loading..."}
+      </div>
+      <div className="mb-2">
+        <strong className="text-dark">Location:</strong> {booking.location}
+      </div>
+      <div className="mb-2">
+        <strong className="text-dark">Time:</strong> {booking.time}
+      </div>
+      <div className="mb-2">
+  <strong className="text-dark">📌 Status:</strong>
+  <span 
+    className={`badge ms-2 ${booking.bookstatus === 0 
+      ? "bg-warning text-dark"   // Pending
+      : booking.bookstatus === 1 
+      ? "bg-info text-dark"      // In Progress
+      : booking.bookstatus === 2 
+      ? "bg-success"             // Completed
+      : "bg-danger"}`}           // Cancelled
+  >
+    {booking.bookstatus === 0 
+      ? "Pending" 
+      : booking.bookstatus === 1 
+      ? "In Progress" 
+      : booking.bookstatus === 2 
+      ? "Completed" 
+      : "Cancelled"}
+  </span>
 </div>
 
-               </Card.Body>
+      <div className="mb-2">
+        <strong className="text-dark">Payment:</strong>
+        <span className={`badge ms-2 ${booking.paymentstatus === 0 ? "bg-danger" : "bg-success"}`}>
+          {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
+        </span>
+      </div>
+      <div className="mb-2">
+        <strong className="text-dark">Total Fee:</strong>
+        <span className="text-success fw-bold ms-2">${booking.totalfee}</span>
+      </div>
+    </Card.Text>
+
+    <div className="mt-auto text-center">
+      <Button 
+        variant="success" 
+        onClick={() => handleShowModal(booking)} 
+        className="w-100 fw-bold py-2 rounded-pill"
+        disabled={booking.bookstatus !== 2}
+      >
+        Pay Now
+      </Button>
+    </div>
+  </Card.Body>
+</Card>
+
              </Card>
            </Col>
          ))}
