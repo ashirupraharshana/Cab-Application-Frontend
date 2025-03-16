@@ -6,6 +6,8 @@ function ViewMyBookings() {
   const userId = localStorage.getItem("userId");
   const [bookings, setBookings] = useState([]);
   const [cars, setCars] = useState({});
+  const [selectedCarId, setSelectedCarId] = useState(null);
+
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -41,24 +43,65 @@ function ViewMyBookings() {
     fetchBookings();
   }, [userId]);
 
-  const handleDelete = async (bookingId) => {
-    if (!window.confirm("Are you sure you want to delete this booking?")) return;
-
+  const handleCancel = async (bookingId) => {
     try {
-      const response = await fetch(`http://localhost:8080/bookings/delete/${bookingId}`, {
-        method: "DELETE",
+      const response = await fetch(`http://localhost:8080/bookings/update/${bookingId}/status3`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
       });
 
-      if (!response.ok) throw new Error("Failed to delete booking");
+      if (!response.ok) throw new Error("Failed to update booking status");
 
-      setBookings(bookings.filter((booking) => booking.id !== bookingId));
-      alert("Booking deleted successfully!");
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, bookstatus: 2 } : booking
+        )
+      );
+
+      alert(`Booking ${bookingId} has been cancelled.`);
+      window.location.reload();
     } catch (error) {
-      console.error("Error deleting booking:", error);
-      alert("Failed to delete booking.");
+      console.error("Error updating booking status:", error);
+      alert("Failed to cancel booking. Try again.");
+    }
+    
+  };
+  const updateCarStatus = async (carId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/cars/updateStatusToAvailable/${carId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) throw new Error("Failed to update car status");
+  
+      alert("Car status updated successfully!");
+  
+      // Optional: Refresh state or reload page if needed
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating car status:", error);
+      alert("Failed to update car status. Try again.");
     }
   };
-
+  
+  
+  
+  const statusColors = {
+    0: "orange",
+    1: "blue",
+    2: "green",
+    3: "red",
+  };
+  
+  const statusLabels = {
+    0: "Pending",
+    1: "In Progress",
+    2: "Complete",
+    3: "Cancelled",
+  };
+  
+  
   return (
 <>
     {/* Navbar */}
@@ -107,31 +150,14 @@ function ViewMyBookings() {
                 {car && <p className="card-text"><strong>Car:</strong> {car.model}</p>}
                 <p className="card-text"><strong>Location:</strong> {booking.location}</p>
                 <p className="card-text">
+                  
                   <strong>Status:</strong> 
-                  <span
-  className="fw-bold"
-  style={{
-    color:
-      booking.bookstatus === 1
-        ? "blue"
-        : booking.bookstatus === 2
-        ? "green"
-        : booking.bookstatus === 3
-        ? "red"
-        : "orange",
-  }}
->
-  {booking.bookstatus === 0
-    ? "Pending"
-    : booking.bookstatus === 1
-    ? "In Progress"
-    : booking.bookstatus === 2
-    ? "Complete"
-    : "Cancelled"}
+                  <span className="fw-bold" style={{ color: statusColors[booking.bookstatus] }}>
+  {statusLabels[booking.bookstatus]}
 </span>
 
                 </p>
-                <p className="card-text"><strong>Fee:</strong> ${booking.totalfee.toFixed(2)}</p>
+                <p className="card-text"><strong>Fee:</strong> Rs.{booking.totalfee.toFixed(2)}</p>
                 <p className="card-text">
                   <strong>Payment:</strong> 
                   <span className={`fw-bold ${booking.paymentstatus === 0 ? "text-danger" : "text-success"}`}>
@@ -139,11 +165,22 @@ function ViewMyBookings() {
                   </span>
                 </p>
                 <button
-                  onClick={() => handleDelete(booking.id)}
-                  className="btn btn-danger w-100"
-                >
-                  Delete Booking
-                </button>
+  onClick={() => {
+    const action = window.confirm("Click OK to Cancel Booking");
+    if (action) {
+      handleCancel(booking.id);
+      updateCarStatus(booking.carid);
+    }
+  }}
+  className="btn btn-danger w-100"
+  disabled={booking.bookstatus === 1 || booking.bookstatus === 2 || booking.bookstatus === 3} // Disable if bookstatus is 1, 2, or 3
+>
+  Cancel Booking
+</button>
+
+
+
+
               </div>
             </div>
           </div>
