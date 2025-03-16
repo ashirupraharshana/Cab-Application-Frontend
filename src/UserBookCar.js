@@ -76,7 +76,7 @@ function UserBookCar() {
   
       if (!bookingResponse.ok) throw new Error("Booking failed");
   
-      // Step 2: Update the car status to 1 (Available)
+      // Step 2: Update the car status to 1 (in use)
       const statusUpdateResponse = await fetch(`http://localhost:8080/cars/updateStatus/${selectedCarId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -86,6 +86,7 @@ function UserBookCar() {
   
       alert("Booking successful! Car status updated.");
       setShowModal(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error:", error);
       alert("Booking failed. Try again.");
@@ -178,7 +179,7 @@ function UserBookCar() {
     <strong className="me-2 text-danger">
       <i className="fas fa-dollar-sign"></i> Price per Km:
     </strong>
-    <span className="fw-bold text-dark">${car.pricePerKm}</span>
+    <span className="fw-bold text-dark">Rs.{car.pricePerKm}</span>
   </div>
 </Card.Text>
 
