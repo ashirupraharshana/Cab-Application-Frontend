@@ -52,6 +52,49 @@ const ViewBookingWithoutLogin = () => {
     setCars(carData);
   };
 
+  const handleCancel = async (bookingId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/bookings/update/${bookingId}/status3`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) throw new Error("Failed to update booking status");
+
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, bookstatus: 2 } : booking
+        )
+      );
+
+      alert(`Booking ${bookingId} has been cancelled.`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      alert("Failed to cancel booking. Try again.");
+    }
+    
+  };
+  const updateCarStatus = async (carId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/cars/updateStatusToAvailable/${carId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) throw new Error("Failed to update car status");
+  
+      alert("Car status updated successfully!");
+  
+      // Optional: Refresh state or reload page if needed
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating car status:", error);
+      alert("Failed to update car status. Try again.");
+    }
+  };
+  
+
   return (
     <>
       {/* Navbar */}
@@ -124,8 +167,22 @@ const ViewBookingWithoutLogin = () => {
                       <span className={`badge ${booking.paymentstatus === 0 ? "bg-danger" : "bg-success"}`}>
                         {booking.paymentstatus === 0 ? "Unpaid" : "Paid"}
                       </span> <br />
-                      <strong>Total Fee:</strong> <span className="text-primary fw-bold">${booking.totalfee}</span>
+                      <strong>Total Fee:</strong> <span className="text-primary fw-bold">Rs.{booking.totalfee}</span>
                     </Card.Text>
+                    <button
+  onClick={() => {
+    const action = window.confirm("Click OK to Cancel Booking");
+    if (action) {
+      handleCancel(booking.id);
+      updateCarStatus(booking.carid);
+    }
+  }}
+  className="btn btn-danger w-100"
+  disabled={booking.bookstatus === 3 || booking.bookstatus === 2 || booking.bookstatus === 1 } // Disable when bookstatus is 2
+>
+  Delete Booking
+</button>
+
                   </Card.Body>
                 </Card>
               </Col>
